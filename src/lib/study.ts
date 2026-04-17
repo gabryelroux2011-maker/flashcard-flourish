@@ -50,7 +50,7 @@ export async function createDeckFromPack(pack: AIPack, sourceText: string, folde
   await supabase.from("quizzes").insert({
     deck_id: deck.id,
     title: pack.quiz.title,
-    questions: pack.quiz.questions,
+    questions: pack.quiz.questions as any,
   });
 
   // Build a flat node/edge list from the AI mindmap shape
