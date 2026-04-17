@@ -14,7 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cards: {
+        Row: {
+          created_at: string
+          deck_id: string
+          id: string
+          key_points: Json
+          position: number
+          summary: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          deck_id: string
+          id?: string
+          key_points?: Json
+          position?: number
+          summary: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          deck_id?: string
+          id?: string
+          key_points?: Json
+          position?: number
+          summary?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decks: {
+        Row: {
+          created_at: string
+          description: string | null
+          folder_id: string | null
+          id: string
+          source_text: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          folder_id?: string | null
+          id?: string
+          source_text?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          folder_id?: string | null
+          id?: string
+          source_text?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decks_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folders: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      mindmaps: {
+        Row: {
+          created_at: string
+          deck_id: string
+          edges: Json
+          id: string
+          nodes: Json
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          deck_id: string
+          edges?: Json
+          id?: string
+          nodes?: Json
+          title: string
+        }
+        Update: {
+          created_at?: string
+          deck_id?: string
+          edges?: Json
+          id?: string
+          nodes?: Json
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mindmaps_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          attempts: Json
+          created_at: string
+          deck_id: string
+          id: string
+          questions: Json
+          title: string
+        }
+        Insert: {
+          attempts?: Json
+          created_at?: string
+          deck_id: string
+          id?: string
+          questions?: Json
+          title: string
+        }
+        Update: {
+          attempts?: Json
+          created_at?: string
+          deck_id?: string
+          id?: string
+          questions?: Json
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
