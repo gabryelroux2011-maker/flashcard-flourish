@@ -1,5 +1,6 @@
 // Helper: parse uploaded files into plain text
 // Supports PDF, DOCX, TXT, and images (OCR)
+import * as pdfjs from "pdfjs-dist";
 // @ts-ignore - workerSrc exists at runtime
 import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import mammoth from "mammoth";

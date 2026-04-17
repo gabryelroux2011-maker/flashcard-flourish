@@ -105,7 +105,7 @@ export async function enrichDeck(deckId: string, additionalText: string) {
   await supabase.from("quizzes").insert({
     deck_id: deckId,
     title: pack.quiz.title,
-    questions: pack.quiz.questions,
+    questions: pack.quiz.questions as any,
   });
 
   // Replace the mindmap
