@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, ChevronRight, Trophy, RotateCcw } from "lucide-react";
 import type { Quiz, QuizQuestion } from "@/lib/types";
