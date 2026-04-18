@@ -57,6 +57,7 @@ export type Database = {
           created_at: string
           description: string | null
           folder_id: string | null
+          grade_level: string | null
           id: string
           source_text: string | null
           tags: string[]
@@ -67,6 +68,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           folder_id?: string | null
+          grade_level?: string | null
           id?: string
           source_text?: string | null
           tags?: string[]
@@ -77,6 +79,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           folder_id?: string | null
+          grade_level?: string | null
           id?: string
           source_text?: string | null
           tags?: string[]
