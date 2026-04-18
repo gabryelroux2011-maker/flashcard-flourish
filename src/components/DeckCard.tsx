@@ -4,6 +4,8 @@ import { Layers, ListChecks, Network } from "lucide-react";
 import type { Deck, QuizAttempt } from "@/lib/types";
 import { tierForAttempts } from "@/lib/mastery";
 import { TierBadge } from "@/components/TierBadge";
+import { GradeBadge } from "@/components/GradeBadge";
+import { getGradeLevel } from "@/lib/grade-levels";
 
 interface DeckCardProps {
   deck: Deck;
@@ -22,6 +24,7 @@ const palette = [
 export function DeckCard({ deck, index = 0, cardCount, attempts }: DeckCardProps) {
   const grad = palette[index % palette.length];
   const { tier, avg } = tierForAttempts(attempts);
+  const gradeLevel = getGradeLevel(deck.grade_level);
 
   return (
     <motion.div
@@ -37,8 +40,11 @@ export function DeckCard({ deck, index = 0, cardCount, attempts }: DeckCardProps
       >
         <div className={`h-24 bg-gradient-to-br ${grad} relative`}>
           <div className="absolute inset-0 bg-[radial-gradient(at_top_right,white,transparent_60%)] opacity-30" />
-          <div className="absolute right-4 top-4 rounded-full bg-white/30 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
-            {new Date(deck.updated_at).toLocaleDateString()}
+          <div className="absolute right-4 top-4 flex items-center gap-2">
+            {gradeLevel && <GradeBadge grade={gradeLevel} size="sm" />}
+            <div className="rounded-full bg-white/30 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
+              {new Date(deck.updated_at).toLocaleDateString("fr-FR")}
+            </div>
           </div>
           <div className="absolute -bottom-4 left-4">
             <TierBadge tier={tier} size="sm" />
