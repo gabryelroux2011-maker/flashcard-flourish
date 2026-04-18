@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Layers, ListChecks, Network } from "lucide-react";
-import type { Deck } from "@/lib/types";
+import type { Deck, QuizAttempt } from "@/lib/types";
+import { tierForAttempts } from "@/lib/mastery";
+import { TierBadge } from "@/components/TierBadge";
 
 interface DeckCardProps {
   deck: Deck;
   index?: number;
   cardCount?: number;
+  attempts?: QuizAttempt[];
 }
 
 const palette = [
@@ -16,8 +19,10 @@ const palette = [
   "from-rose-400 to-pink-500",
 ];
 
-export function DeckCard({ deck, index = 0, cardCount }: DeckCardProps) {
+export function DeckCard({ deck, index = 0, cardCount, attempts }: DeckCardProps) {
   const grad = palette[index % palette.length];
+  const { tier, avg } = tierForAttempts(attempts);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -35,8 +40,11 @@ export function DeckCard({ deck, index = 0, cardCount }: DeckCardProps) {
           <div className="absolute right-4 top-4 rounded-full bg-white/30 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
             {new Date(deck.updated_at).toLocaleDateString()}
           </div>
+          <div className="absolute -bottom-4 left-4">
+            <TierBadge tier={tier} size="sm" />
+          </div>
         </div>
-        <div className="p-5">
+        <div className="p-5 pt-6">
           <h3 className="font-display text-lg font-semibold leading-tight">
             {deck.title}
           </h3>
@@ -45,16 +53,21 @@ export function DeckCard({ deck, index = 0, cardCount }: DeckCardProps) {
               {deck.description}
             </p>
           )}
-          <div className="mt-4 flex items-center gap-4 text-xs text-foreground/60">
-            <span className="flex items-center gap-1">
-              <Layers className="h-3.5 w-3.5" /> {cardCount ?? "?"} fiches
-            </span>
-            <span className="flex items-center gap-1">
-              <ListChecks className="h-3.5 w-3.5" /> Quiz
-            </span>
-            <span className="flex items-center gap-1">
-              <Network className="h-3.5 w-3.5" /> Mind map
-            </span>
+          <div className="mt-4 flex items-center justify-between gap-2 text-xs text-foreground/60">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1">
+                <Layers className="h-3.5 w-3.5" /> {cardCount ?? "?"}
+              </span>
+              <span className="flex items-center gap-1">
+                <ListChecks className="h-3.5 w-3.5" /> Quiz
+              </span>
+              <span className="flex items-center gap-1">
+                <Network className="h-3.5 w-3.5" /> Map
+              </span>
+            </div>
+            {avg !== null && (
+              <span className="font-semibold text-primary">{Math.round(avg)}%</span>
+            )}
           </div>
         </div>
       </Link>

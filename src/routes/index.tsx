@@ -4,9 +4,10 @@ import { Sparkles, Plus, ArrowRight, BookOpen, Trophy, Clock } from "lucide-reac
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { DeckCard } from "@/components/DeckCard";
+import { TimeStatsCard } from "@/components/TimeWidget";
 import { listDecks } from "@/lib/study";
 import { supabase } from "@/integrations/supabase/client";
-import type { Deck } from "@/lib/types";
+import type { Deck, QuizAttempt } from "@/lib/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/")({
 function Dashboard() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [attemptsByDeck, setAttemptsByDeck] = useState<Record<string, QuizAttempt[]>>({});
   const [stats, setStats] = useState({ decks: 0, cards: 0, attempts: 0 });
   const [loading, setLoading] = useState(true);
 
@@ -30,10 +32,9 @@ function Dashboard() {
         const ds = await listDecks();
         setDecks(ds);
 
-        // Pull card counts and quiz attempts in parallel
         const [{ data: cardRows }, { data: quizRows }] = await Promise.all([
           supabase.from("cards").select("deck_id"),
-          supabase.from("quizzes").select("attempts"),
+          supabase.from("quizzes").select("deck_id, attempts"),
         ]);
         const c: Record<string, number> = {};
         cardRows?.forEach((r: any) => {
@@ -41,10 +42,15 @@ function Dashboard() {
         });
         setCounts(c);
 
-        const attemptCount = (quizRows ?? []).reduce(
-          (acc, q: any) => acc + (Array.isArray(q.attempts) ? q.attempts.length : 0),
-          0,
-        );
+        const ab: Record<string, QuizAttempt[]> = {};
+        let attemptCount = 0;
+        (quizRows ?? []).forEach((q: any) => {
+          const a = Array.isArray(q.attempts) ? (q.attempts as QuizAttempt[]) : [];
+          ab[q.deck_id] = a;
+          attemptCount += a.length;
+        });
+        setAttemptsByDeck(ab);
+
         setStats({
           decks: ds.length,
           cards: cardRows?.length ?? 0,
@@ -62,7 +68,7 @@ function Dashboard() {
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative mb-10 overflow-hidden rounded-3xl bg-gradient-primary p-8 text-white shadow-glow md:p-10"
+        className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-primary p-8 text-white shadow-glow md:p-10"
       >
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
         <div className="absolute -bottom-24 right-1/3 h-64 w-64 rounded-full bg-pink-300/40 blur-3xl" />
@@ -88,11 +94,14 @@ function Dashboard() {
         </div>
       </motion.section>
 
-      {/* Stats */}
-      <section className="mb-10 grid gap-4 md:grid-cols-3">
+      {/* Stats + Time */}
+      <section className="mb-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={BookOpen} label="Fiches créées" value={stats.decks} />
         <StatCard icon={Trophy} label="Cartes étudiées" value={stats.cards} />
         <StatCard icon={Clock} label="Quiz tentés" value={stats.attempts} />
+        <div className="lg:col-span-1 md:col-span-2">
+          <TimeStatsCard />
+        </div>
       </section>
 
       {/* Decks */}
@@ -123,7 +132,13 @@ function Dashboard() {
         ) : (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {decks.slice(0, 6).map((d, i) => (
-              <DeckCard key={d.id} deck={d} index={i} cardCount={counts[d.id]} />
+              <DeckCard
+                key={d.id}
+                deck={d}
+                index={i}
+                cardCount={counts[d.id]}
+                attempts={attemptsByDeck[d.id]}
+              />
             ))}
           </div>
         )}
