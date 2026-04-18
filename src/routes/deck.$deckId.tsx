@@ -20,8 +20,12 @@ import {
   getQuiz,
   listCards,
   updateCard,
+  setDeckGradeLevel,
 } from "@/lib/study";
 import type { Deck, MindMap, Quiz, StudyCard } from "@/lib/types";
+import { GradeLevelPicker } from "@/components/GradeLevelPicker";
+import { GradeBadge } from "@/components/GradeBadge";
+import { getGradeLevel } from "@/lib/grade-levels";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/deck/$deckId")({
@@ -46,6 +50,7 @@ function DeckDetail() {
   const [tab, setTab] = useState<Tab>("cards");
   const [enriching, setEnriching] = useState(false);
   const [showEnrich, setShowEnrich] = useState(false);
+  const [showGradePicker, setShowGradePicker] = useState(false);
   const [loading, setLoading] = useState(true);
 
   async function refreshAll() {
@@ -104,6 +109,14 @@ function DeckDetail() {
   const lastAttempt = quiz?.attempts?.[quiz.attempts.length - 1];
   const { tier, avg } = tierForAttempts(quiz?.attempts);
   const upcoming = nextTier(tier);
+  const gradeLevel = getGradeLevel(deck.grade_level);
+
+  async function handleSetGrade(value: string | null) {
+    await setDeckGradeLevel(deckId, value);
+    setDeck((d) => (d ? { ...d, grade_level: value } : d));
+    setShowGradePicker(false);
+    toast.success(value ? "Niveau mis à jour" : "Niveau retiré");
+  }
 
   return (
     <AppShell>
@@ -122,14 +135,36 @@ function DeckDetail() {
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <div className="mb-3 flex items-center gap-2">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
               <TierBadge tier={tier} size="md" />
               {avg !== null && (
                 <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
                   Maîtrise {Math.round(avg)}%
                 </span>
               )}
+              <button
+                onClick={() => setShowGradePicker((v) => !v)}
+                className="transition hover:scale-105"
+                title="Changer le niveau"
+              >
+                {gradeLevel ? (
+                  <GradeBadge grade={gradeLevel} size="sm" />
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur hover:bg-white/30">
+                    + Niveau
+                  </span>
+                )}
+              </button>
             </div>
+            {showGradePicker && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 rounded-2xl bg-white/95 p-3 text-foreground shadow-soft"
+              >
+                <GradeLevelPicker value={deck.grade_level} onChange={handleSetGrade} />
+              </motion.div>
+            )}
             <h1 className="font-display text-3xl font-bold leading-tight md:text-4xl">
               {deck.title}
             </h1>

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ImportZone } from "@/components/ImportZone";
+import { GradeLevelPicker } from "@/components/GradeLevelPicker";
 import { createDeckFromPack, generatePack } from "@/lib/study";
 import { toast } from "sonner";
 
@@ -20,13 +21,14 @@ export const Route = createFileRoute("/new")({
 function NewDeck() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [grade, setGrade] = useState<string | null>(null);
 
   async function handleGenerate(text: string) {
     setBusy(true);
     try {
       toast.loading("Analyse du contenu et génération en cours...", { id: "gen" });
       const pack = await generatePack(text);
-      const deck = await createDeckFromPack(pack, text);
+      const deck = await createDeckFromPack(pack, text, { gradeLevel: grade });
       toast.success("Fiche créée !", { id: "gen" });
       navigate({ to: "/deck/$deckId", params: { deckId: deck.id } });
     } catch (e) {
@@ -56,8 +58,11 @@ function NewDeck() {
           </p>
         </div>
 
-        <div className="rounded-3xl glass-strong p-6 shadow-soft md:p-8">
-          <ImportZone onTextReady={handleGenerate} isBusy={busy} />
+        <div className="space-y-5 rounded-3xl glass-strong p-6 shadow-soft md:p-8">
+          <GradeLevelPicker value={grade} onChange={setGrade} />
+          <div className="border-t border-border/60 pt-5">
+            <ImportZone onTextReady={handleGenerate} isBusy={busy} />
+          </div>
         </div>
 
         <div className="mt-8 grid gap-3 text-sm text-muted-foreground md:grid-cols-3">

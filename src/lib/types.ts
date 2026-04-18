@@ -70,6 +70,7 @@ export interface Deck {
   description: string | null;
   source_text: string | null;
   tags: string[];
+  grade_level: string | null;
   created_at: string;
   updated_at: string;
 }

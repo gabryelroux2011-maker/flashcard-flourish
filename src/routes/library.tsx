@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Plus, FolderTree } from "lucide-react";
+import { Search, Plus, FolderTree, GraduationCap } from "lucide-react";
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { DeckCard } from "@/components/DeckCard";
 import { listDecks } from "@/lib/study";
 import { supabase } from "@/integrations/supabase/client";
 import type { Deck, QuizAttempt } from "@/lib/types";
+import { GRADE_LEVELS } from "@/lib/grade-levels";
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -18,11 +19,14 @@ export const Route = createFileRoute("/library")({
   component: Library,
 });
 
+type FilterValue = "all" | "none" | string;
+
 function Library() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [attemptsByDeck, setAttemptsByDeck] = useState<Record<string, QuizAttempt[]>>({});
   const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<FilterValue>("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,13 +53,27 @@ function Library() {
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    if (!needle) return decks;
-    return decks.filter(
-      (d) =>
+    return decks.filter((d) => {
+      if (filter === "none" && d.grade_level) return false;
+      if (filter !== "all" && filter !== "none" && d.grade_level !== filter) return false;
+      if (!needle) return true;
+      return (
         d.title.toLowerCase().includes(needle) ||
-        (d.description ?? "").toLowerCase().includes(needle),
-    );
-  }, [decks, q]);
+        (d.description ?? "").toLowerCase().includes(needle)
+      );
+    });
+  }, [decks, q, filter]);
+
+  // Compteur par niveau pour les pills
+  const byLevel = useMemo(() => {
+    const m: Record<string, number> = { all: decks.length, none: 0 };
+    GRADE_LEVELS.forEach((g) => (m[g.id] = 0));
+    decks.forEach((d) => {
+      if (!d.grade_level) m.none += 1;
+      else m[d.grade_level] = (m[d.grade_level] ?? 0) + 1;
+    });
+    return m;
+  }, [decks]);
 
   return (
     <AppShell>
@@ -74,7 +92,7 @@ function Library() {
         </Link>
       </div>
 
-      <div className="mb-6 flex items-center gap-2 rounded-2xl glass-strong p-2 shadow-soft">
+      <div className="mb-4 flex items-center gap-2 rounded-2xl glass-strong p-2 shadow-soft">
         <Search className="ml-2 h-4 w-4 text-muted-foreground" />
         <input
           value={q}
@@ -82,6 +100,37 @@ function Library() {
           placeholder="Rechercher une fiche, un sujet..."
           className="flex-1 bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-muted-foreground"
         />
+      </div>
+
+      {/* Filtres par niveau */}
+      <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2">
+        <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground">
+          <GraduationCap className="h-3.5 w-3.5" /> Niveau :
+        </span>
+        <FilterPill
+          active={filter === "all"}
+          onClick={() => setFilter("all")}
+          label="Tous"
+          count={byLevel.all}
+        />
+        {GRADE_LEVELS.map((g) => (
+          <FilterPill
+            key={g.id}
+            active={filter === g.id}
+            onClick={() => setFilter(g.id)}
+            label={g.label}
+            count={byLevel[g.id]}
+            gradient={g.gradient}
+          />
+        ))}
+        {byLevel.none > 0 && (
+          <FilterPill
+            active={filter === "none"}
+            onClick={() => setFilter("none")}
+            label="Sans niveau"
+            count={byLevel.none}
+          />
+        )}
       </div>
 
       {loading ? (
@@ -98,7 +147,9 @@ function Library() {
         >
           <FolderTree className="mx-auto mb-3 h-10 w-10 text-primary" />
           <p className="font-medium">
-            {q ? "Aucune fiche ne correspond à ta recherche." : "Aucune fiche pour l'instant."}
+            {q || filter !== "all"
+              ? "Aucune fiche ne correspond à ces critères."
+              : "Aucune fiche pour l'instant."}
           </p>
         </motion.div>
       ) : (
@@ -115,5 +166,37 @@ function Library() {
         </div>
       )}
     </AppShell>
+  );
+}
+
+function FilterPill({
+  active,
+  onClick,
+  label,
+  count,
+  gradient,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count: number;
+  gradient?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+        active
+          ? gradient
+            ? `bg-gradient-to-r ${gradient} text-white shadow-glow scale-105`
+            : "bg-foreground text-background shadow-soft"
+          : "bg-white/70 text-foreground/70 ring-1 ring-border hover:bg-white"
+      }`}
+    >
+      {label}
+      <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${active ? "bg-white/25" : "bg-foreground/10"}`}>
+        {count}
+      </span>
+    </button>
   );
 }
