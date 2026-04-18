@@ -6,7 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { DeckCard } from "@/components/DeckCard";
 import { listDecks } from "@/lib/study";
 import { supabase } from "@/integrations/supabase/client";
-import type { Deck } from "@/lib/types";
+import type { Deck, QuizAttempt } from "@/lib/types";
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/library")({
 function Library() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [attemptsByDeck, setAttemptsByDeck] = useState<Record<string, QuizAttempt[]>>({});
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -28,12 +29,20 @@ function Library() {
     (async () => {
       const ds = await listDecks();
       setDecks(ds);
-      const { data: cardRows } = await supabase.from("cards").select("deck_id");
+      const [{ data: cardRows }, { data: quizRows }] = await Promise.all([
+        supabase.from("cards").select("deck_id"),
+        supabase.from("quizzes").select("deck_id, attempts"),
+      ]);
       const c: Record<string, number> = {};
       cardRows?.forEach((r: any) => {
         c[r.deck_id] = (c[r.deck_id] ?? 0) + 1;
       });
       setCounts(c);
+      const ab: Record<string, QuizAttempt[]> = {};
+      (quizRows ?? []).forEach((q: any) => {
+        ab[q.deck_id] = Array.isArray(q.attempts) ? (q.attempts as QuizAttempt[]) : [];
+      });
+      setAttemptsByDeck(ab);
       setLoading(false);
     })();
   }, []);
@@ -95,7 +104,13 @@ function Library() {
       ) : (
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((d, i) => (
-            <DeckCard key={d.id} deck={d} index={i} cardCount={counts[d.id]} />
+            <DeckCard
+              key={d.id}
+              deck={d}
+              index={i}
+              cardCount={counts[d.id]}
+              attempts={attemptsByDeck[d.id]}
+            />
           ))}
         </div>
       )}

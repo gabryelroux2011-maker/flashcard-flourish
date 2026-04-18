@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Sparkles, LayoutDashboard, FolderTree, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { TimeWidget } from "@/components/TimeWidget";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -64,9 +65,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          <div className="rounded-2xl bg-gradient-soft p-4 text-center">
-            <p className="text-xs text-foreground/70">Propulsé par</p>
-            <p className="text-sm font-semibold text-gradient">Lovable AI</p>
+          <div className="space-y-3">
+            <TimeWidget />
+            <div className="rounded-2xl bg-gradient-soft p-4 text-center">
+              <p className="text-xs text-foreground/70">Propulsé par</p>
+              <p className="text-sm font-semibold text-gradient">Lovable AI</p>
+            </div>
           </div>
         </aside>
 

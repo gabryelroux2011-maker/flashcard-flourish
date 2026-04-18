@@ -9,6 +9,8 @@ import { FlashCard } from "@/components/FlashCard";
 import { QuizPlayer } from "@/components/QuizPlayer";
 import { MindMapEditor } from "@/components/MindMapEditor";
 import { ImportZone } from "@/components/ImportZone";
+import { TierBadge, TierProgress } from "@/components/TierBadge";
+import { tierForAttempts, nextTier } from "@/lib/mastery";
 import {
   deleteCard,
   deleteDeck,
@@ -100,6 +102,8 @@ function DeckDetail() {
   }
 
   const lastAttempt = quiz?.attempts?.[quiz.attempts.length - 1];
+  const { tier, avg } = tierForAttempts(quiz?.attempts);
+  const upcoming = nextTier(tier);
 
   return (
     <AppShell>
@@ -118,6 +122,14 @@ function DeckDetail() {
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
+            <div className="mb-3 flex items-center gap-2">
+              <TierBadge tier={tier} size="md" />
+              {avg !== null && (
+                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
+                  Maîtrise {Math.round(avg)}%
+                </span>
+              )}
+            </div>
             <h1 className="font-display text-3xl font-bold leading-tight md:text-4xl">
               {deck.title}
             </h1>
@@ -150,6 +162,11 @@ function DeckDetail() {
               <Trash2 className="h-4 w-4" />
             </button>
           </div>
+        </div>
+
+        {/* Mastery progress bar */}
+        <div className="mt-6 max-w-md">
+          <TierProgress pct={avg} current={tier} next={upcoming} />
         </div>
       </motion.header>
 
