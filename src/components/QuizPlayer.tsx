@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, ChevronRight, Trophy, RotateCcw } from "lucide-react";
 import type { Quiz, QuizQuestion } from "@/lib/types";
 import { recordAttempt } from "@/lib/study";
+import { tierForAttempts, nextTier } from "@/lib/mastery";
+import { TierBadge, TierProgress } from "@/components/TierBadge";
 
 interface QuizPlayerProps {
   quiz: Quiz;
@@ -52,7 +54,15 @@ export function QuizPlayer({ quiz, onFinished }: QuizPlayerProps) {
       (acc, qq, i) => acc + (answers[i] && isCorrect(qq, answers[i]) ? 1 : 0),
       0,
     );
-    const pct = Math.round((score / total) * 100);
+    const allAttempts = [
+      ...((quiz.attempts as any[]) ?? []),
+      { score, total, taken_at: new Date().toISOString() },
+    ];
+    const previous = tierForAttempts(quiz.attempts);
+    const updated = tierForAttempts(allAttempts);
+    const upgraded = previous.tier.id !== updated.tier.id;
+    const upcoming = nextTier(updated.tier);
+
     return (
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -62,19 +72,26 @@ export function QuizPlayer({ quiz, onFinished }: QuizPlayerProps) {
         <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-gradient-primary shadow-glow">
           <Trophy className="h-10 w-10 text-white" />
         </div>
-        <h2 className="font-display text-3xl font-bold">Bravo !</h2>
+        <h2 className="font-display text-3xl font-bold">
+          {upgraded ? "Nouveau palier !" : "Bravo !"}
+        </h2>
         <p className="mt-2 text-muted-foreground">Tu as obtenu</p>
         <div className="my-4 text-6xl font-bold text-gradient">
           {score}/{total}
         </div>
-        <div className="mx-auto mb-6 h-2 max-w-xs overflow-hidden rounded-full bg-secondary">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="h-full rounded-full bg-gradient-primary"
-          />
+
+        <div className="mx-auto mb-6 max-w-xs space-y-3">
+          <div className="flex items-center justify-center">
+            <TierBadge tier={updated.tier} size="lg" />
+          </div>
+          {upgraded && (
+            <p className="text-xs font-medium text-primary">
+              ✨ Tu es passé de {previous.tier.label} à {updated.tier.label}
+            </p>
+          )}
+          <TierProgress pct={updated.avg} current={updated.tier} next={upcoming} />
         </div>
+
         <button
           onClick={reset}
           className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-6 py-3 font-semibold text-white shadow-glow hover:scale-105"
