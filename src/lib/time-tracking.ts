@@ -70,16 +70,18 @@ function bumpStreak(stats: TimeStats): TimeStats {
 
 /** Hook qui suit le temps actif sur l'app et persiste dans localStorage. */
 export function useTimeTracker(): TimeStats {
-  const [stats, setStats] = useState<TimeStats>(() => readStats());
+  // Toujours démarrer avec `empty` côté client pour matcher le SSR et éviter
+  // les erreurs d'hydratation. Les vraies stats sont chargées dans useEffect.
+  const [stats, setStats] = useState<TimeStats>(empty);
   const lastActivity = useRef<number>(Date.now());
   const lastTick = useRef<number>(Date.now());
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Marque le démarrage de session comme jour actif
-    setStats((s) => {
-      const next = bumpStreak(s);
+    // Charge les stats persistées et marque le jour actif
+    setStats(() => {
+      const next = bumpStreak(readStats());
       writeStats(next);
       return next;
     });
