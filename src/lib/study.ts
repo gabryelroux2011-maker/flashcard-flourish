@@ -22,14 +22,19 @@ export async function generatePack(text: string, existing = false) {
   return data.pack;
 }
 
-export async function createDeckFromPack(pack: AIPack, sourceText: string, folderId: string | null = null) {
+export async function createDeckFromPack(
+  pack: AIPack,
+  sourceText: string,
+  options: { folderId?: string | null; gradeLevel?: string | null } = {},
+) {
   const { data: deck, error: deckErr } = await supabase
     .from("decks")
     .insert({
       title: pack.deck_title,
       description: pack.deck_description,
       source_text: sourceText,
-      folder_id: folderId,
+      folder_id: options.folderId ?? null,
+      grade_level: options.gradeLevel ?? null,
     })
     .select()
     .single();
@@ -217,5 +222,10 @@ export async function deleteDeck(id: string) {
 
 export async function moveDeckToFolder(id: string, folderId: string | null) {
   const { error } = await supabase.from("decks").update({ folder_id: folderId }).eq("id", id);
+  if (error) throw error;
+}
+
+export async function setDeckGradeLevel(id: string, gradeLevel: string | null) {
+  const { error } = await supabase.from("decks").update({ grade_level: gradeLevel }).eq("id", id);
   if (error) throw error;
 }
