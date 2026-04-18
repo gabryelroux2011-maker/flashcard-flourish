@@ -20,8 +20,12 @@ import {
   getQuiz,
   listCards,
   updateCard,
+  setDeckGradeLevel,
 } from "@/lib/study";
 import type { Deck, MindMap, Quiz, StudyCard } from "@/lib/types";
+import { GradeLevelPicker } from "@/components/GradeLevelPicker";
+import { GradeBadge } from "@/components/GradeBadge";
+import { getGradeLevel } from "@/lib/grade-levels";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/deck/$deckId")({
