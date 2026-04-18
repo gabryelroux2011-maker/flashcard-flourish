@@ -50,6 +50,7 @@ function DeckDetail() {
   const [tab, setTab] = useState<Tab>("cards");
   const [enriching, setEnriching] = useState(false);
   const [showEnrich, setShowEnrich] = useState(false);
+  const [showGradePicker, setShowGradePicker] = useState(false);
   const [loading, setLoading] = useState(true);
 
   async function refreshAll() {
