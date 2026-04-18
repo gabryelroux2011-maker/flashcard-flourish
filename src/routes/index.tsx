@@ -4,7 +4,6 @@ import { Sparkles, Plus, ArrowRight, BookOpen, Trophy, Clock } from "lucide-reac
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { DeckCard } from "@/components/DeckCard";
-import { TimeStatsCard } from "@/components/TimeWidget";
 import { listDecks } from "@/lib/study";
 import { supabase } from "@/integrations/supabase/client";
 import type { Deck, QuizAttempt } from "@/lib/types";
@@ -94,14 +93,11 @@ function Dashboard() {
         </div>
       </motion.section>
 
-      {/* Stats + Time */}
-      <section className="mb-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats */}
+      <section className="mb-10 grid gap-4 md:grid-cols-3">
         <StatCard icon={BookOpen} label="Fiches créées" value={stats.decks} />
         <StatCard icon={Trophy} label="Cartes étudiées" value={stats.cards} />
         <StatCard icon={Clock} label="Quiz tentés" value={stats.attempts} />
-        <div className="lg:col-span-1 md:col-span-2">
-          <TimeStatsCard />
-        </div>
       </section>
 
       {/* Decks */}
