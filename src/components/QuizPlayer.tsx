@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, ChevronRight, Trophy, RotateCcw } from "lucide-react";
+import { Check, X, ChevronRight, Trophy, RotateCcw, Sparkles, Loader2 } from "lucide-react";
 import type { Quiz, QuizQuestion } from "@/lib/types";
-import { recordAttempt } from "@/lib/study";
+import { recordAttempt, regenerateQuiz } from "@/lib/study";
 import { tierForAttempts, nextTier } from "@/lib/mastery";
 import { TierBadge, TierProgress } from "@/components/TierBadge";
+import { toast } from "sonner";
 
 interface QuizPlayerProps {
   quiz: Quiz;
+  /** Called after an attempt is recorded so parent can refresh data. */
   onFinished?: () => void;
+  /** Called after a fresh quiz is generated so parent can reload it. */
+  onRegenerated?: () => void | Promise<void>;
+  /** When true, the player auto-regenerates fresh questions when "Recommencer" is clicked. */
+  autoRegenerate?: boolean;
 }
 
-export function QuizPlayer({ quiz, onFinished }: QuizPlayerProps) {
+export function QuizPlayer({ quiz, onFinished, onRegenerated, autoRegenerate = true }: QuizPlayerProps) {
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
   const [done, setDone] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   const q: QuizQuestion | undefined = quiz.questions[idx];
   const total = quiz.questions.length;
