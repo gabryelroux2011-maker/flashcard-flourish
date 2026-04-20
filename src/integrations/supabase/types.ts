@@ -96,6 +96,54 @@ export type Database = {
           },
         ]
       }
+      english_tests: {
+        Row: {
+          cefr_level: string
+          comprehension_score: number | null
+          created_at: string
+          duration_seconds: number
+          feedback: string | null
+          grade_level: string | null
+          grammar_score: number | null
+          id: string
+          overall_score: number
+          question_count: number
+          questions: Json
+          speciality: string | null
+          vocabulary_score: number | null
+        }
+        Insert: {
+          cefr_level: string
+          comprehension_score?: number | null
+          created_at?: string
+          duration_seconds?: number
+          feedback?: string | null
+          grade_level?: string | null
+          grammar_score?: number | null
+          id?: string
+          overall_score?: number
+          question_count?: number
+          questions?: Json
+          speciality?: string | null
+          vocabulary_score?: number | null
+        }
+        Update: {
+          cefr_level?: string
+          comprehension_score?: number | null
+          created_at?: string
+          duration_seconds?: number
+          feedback?: string | null
+          grade_level?: string | null
+          grammar_score?: number | null
+          id?: string
+          overall_score?: number
+          question_count?: number
+          questions?: Json
+          speciality?: string | null
+          vocabulary_score?: number | null
+        }
+        Relationships: []
+      }
       folders: {
         Row: {
           color: string
