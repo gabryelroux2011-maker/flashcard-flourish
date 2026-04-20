@@ -49,7 +49,21 @@ export function QuizPlayer({ quiz, onFinished, onRegenerated, autoRegenerate = t
     }
   }
 
-  function reset() {
+  async function reset(opts: { regenerate?: boolean } = {}) {
+    const shouldRegen = opts.regenerate ?? autoRegenerate;
+    if (shouldRegen && onRegenerated) {
+      setRegenerating(true);
+      try {
+        toast.loading("Génération de nouvelles questions...", { id: "qrgn" });
+        await regenerateQuiz(quiz.deck_id);
+        await onRegenerated();
+        toast.success("Quiz renouvelé !", { id: "qrgn" });
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur de régénération", { id: "qrgn" });
+      } finally {
+        setRegenerating(false);
+      }
+    }
     setIdx(0);
     setAnswers({});
     setRevealed({});
