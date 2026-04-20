@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.regenerate-quiz]
 verify_jwt = false
+
+[functions.english-test-next]
+verify_jwt = false
