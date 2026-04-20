@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as LibraryRouteImport } from './routes/library'
+import { Route as EnglishTestRouteImport } from './routes/english-test'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DeckDeckIdRouteImport } from './routes/deck.$deckId'
 
@@ -22,6 +23,11 @@ const NewRoute = NewRouteImport.update({
 const LibraryRoute = LibraryRouteImport.update({
   id: '/library',
   path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnglishTestRoute = EnglishTestRouteImport.update({
+  id: '/english-test',
+  path: '/english-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const DeckDeckIdRoute = DeckDeckIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/english-test': typeof EnglishTestRoute
   '/library': typeof LibraryRoute
   '/new': typeof NewRoute
   '/deck/$deckId': typeof DeckDeckIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/english-test': typeof EnglishTestRoute
   '/library': typeof LibraryRoute
   '/new': typeof NewRoute
   '/deck/$deckId': typeof DeckDeckIdRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/english-test': typeof EnglishTestRoute
   '/library': typeof LibraryRoute
   '/new': typeof NewRoute
   '/deck/$deckId': typeof DeckDeckIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/library' | '/new' | '/deck/$deckId'
+  fullPaths: '/' | '/english-test' | '/library' | '/new' | '/deck/$deckId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/library' | '/new' | '/deck/$deckId'
-  id: '__root__' | '/' | '/library' | '/new' | '/deck/$deckId'
+  to: '/' | '/english-test' | '/library' | '/new' | '/deck/$deckId'
+  id: '__root__' | '/' | '/english-test' | '/library' | '/new' | '/deck/$deckId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EnglishTestRoute: typeof EnglishTestRoute
   LibraryRoute: typeof LibraryRoute
   NewRoute: typeof NewRoute
   DeckDeckIdRoute: typeof DeckDeckIdRoute
@@ -85,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/english-test': {
+      id: '/english-test'
+      path: '/english-test'
+      fullPath: '/english-test'
+      preLoaderRoute: typeof EnglishTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EnglishTestRoute: EnglishTestRoute,
   LibraryRoute: LibraryRoute,
   NewRoute: NewRoute,
   DeckDeckIdRoute: DeckDeckIdRoute,

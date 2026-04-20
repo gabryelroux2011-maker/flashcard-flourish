@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Sparkles, LayoutDashboard, FolderTree, Plus } from "lucide-react";
+import { Sparkles, LayoutDashboard, FolderTree, Plus, Languages } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TimeWidget } from "@/components/TimeWidget";
@@ -8,6 +8,7 @@ const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/library", label: "Bibliothèque", icon: FolderTree },
   { to: "/new", label: "Nouvelle fiche", icon: Plus },
+  { to: "/english-test", label: "Test d'anglais", icon: Languages },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
