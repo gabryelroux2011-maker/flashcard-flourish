@@ -274,7 +274,12 @@ function DeckDetail() {
 
           {tab === "quiz" && (
             quiz && quiz.questions.length > 0 ? (
-              <QuizPlayer quiz={quiz} onFinished={refreshAll} />
+              <QuizPlayer
+                quiz={quiz}
+                onFinished={refreshAll}
+                onRegenerated={refreshAll}
+                autoRegenerate
+              />
             ) : (
               <p className="rounded-3xl glass-strong p-8 text-center text-muted-foreground">
                 Aucun quiz disponible.
