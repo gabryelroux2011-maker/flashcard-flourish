@@ -6,6 +6,7 @@ import type {
   Folder,
   MindMap,
   Quiz,
+  QuizQuestion,
   StudyCard,
 } from "./types";
 
