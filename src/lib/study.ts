@@ -6,6 +6,7 @@ import type {
   Folder,
   MindMap,
   Quiz,
+  QuizQuestion,
   StudyCard,
 } from "./types";
 
@@ -186,6 +187,52 @@ export async function recordAttempt(quizId: string, score: number, total: number
   const { data: quiz } = await supabase.from("quizzes").select("attempts").eq("id", quizId).single();
   const attempts = [...((quiz?.attempts as any[]) ?? []), { score, total, taken_at: new Date().toISOString() }];
   await supabase.from("quizzes").update({ attempts }).eq("id", quizId);
+}
+
+/**
+ * Regenerate the quiz for a deck with a fresh set of AI-generated questions.
+ * Keeps the existing quiz row (and its attempts history) — only `title` and
+ * `questions` are replaced. Pass current questions to bias the AI away from
+ * repeating them.
+ */
+export async function regenerateQuiz(deckId: string) {
+  const { data: deck } = await supabase
+    .from("decks")
+    .select("source_text")
+    .eq("id", deckId)
+    .single();
+  if (!deck?.source_text) throw new Error("Pas de contenu source pour régénérer le quiz");
+
+  const { data: existing } = await supabase
+    .from("quizzes")
+    .select("id, questions")
+    .eq("deck_id", deckId)
+    .maybeSingle();
+  const avoid = ((existing?.questions as any[]) ?? [])
+    .map((q) => q?.question)
+    .filter((s): s is string => typeof s === "string");
+
+  const { data, error } = await supabase.functions.invoke<{
+    quiz?: { title: string; questions: QuizQuestion[] };
+    error?: string;
+  }>("regenerate-quiz", { body: { text: deck.source_text, avoid } });
+  if (error) throw new Error(error.message);
+  if (data?.error) throw new Error(data.error);
+  if (!data?.quiz) throw new Error("Réponse IA vide");
+
+  if (existing?.id) {
+    const { error: upErr } = await supabase
+      .from("quizzes")
+      .update({ title: data.quiz.title, questions: data.quiz.questions as any })
+      .eq("id", existing.id);
+    if (upErr) throw new Error(upErr.message);
+  } else {
+    await supabase.from("quizzes").insert({
+      deck_id: deckId,
+      title: data.quiz.title,
+      questions: data.quiz.questions as any,
+    });
+  }
 }
 
 export async function getMindMap(deckId: string) {

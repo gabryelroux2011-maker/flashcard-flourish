@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, ChevronRight, Trophy, RotateCcw } from "lucide-react";
+import { Check, X, ChevronRight, Trophy, RotateCcw, Sparkles, Loader2 } from "lucide-react";
 import type { Quiz, QuizQuestion } from "@/lib/types";
-import { recordAttempt } from "@/lib/study";
+import { recordAttempt, regenerateQuiz } from "@/lib/study";
 import { tierForAttempts, nextTier } from "@/lib/mastery";
 import { TierBadge, TierProgress } from "@/components/TierBadge";
+import { toast } from "sonner";
 
 interface QuizPlayerProps {
   quiz: Quiz;
+  /** Called after an attempt is recorded so parent can refresh data. */
   onFinished?: () => void;
+  /** Called after a fresh quiz is generated so parent can reload it. */
+  onRegenerated?: () => void | Promise<void>;
+  /** When true, the player auto-regenerates fresh questions when "Recommencer" is clicked. */
+  autoRegenerate?: boolean;
 }
 
-export function QuizPlayer({ quiz, onFinished }: QuizPlayerProps) {
+export function QuizPlayer({ quiz, onFinished, onRegenerated, autoRegenerate = true }: QuizPlayerProps) {
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
   const [done, setDone] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   const q: QuizQuestion | undefined = quiz.questions[idx];
   const total = quiz.questions.length;
@@ -42,7 +49,21 @@ export function QuizPlayer({ quiz, onFinished }: QuizPlayerProps) {
     }
   }
 
-  function reset() {
+  async function reset(opts: { regenerate?: boolean } = {}) {
+    const shouldRegen = opts.regenerate ?? autoRegenerate;
+    if (shouldRegen && onRegenerated) {
+      setRegenerating(true);
+      try {
+        toast.loading("Génération de nouvelles questions...", { id: "qrgn" });
+        await regenerateQuiz(quiz.deck_id);
+        await onRegenerated();
+        toast.success("Quiz renouvelé !", { id: "qrgn" });
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Erreur de régénération", { id: "qrgn" });
+      } finally {
+        setRegenerating(false);
+      }
+    }
     setIdx(0);
     setAnswers({});
     setRevealed({});
@@ -92,12 +113,42 @@ export function QuizPlayer({ quiz, onFinished }: QuizPlayerProps) {
           <TierProgress pct={updated.avg} current={updated.tier} next={upcoming} />
         </div>
 
-        <button
-          onClick={reset}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-6 py-3 font-semibold text-white shadow-glow hover:scale-105"
-        >
-          <RotateCcw className="h-4 w-4" /> Recommencer
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            onClick={() => reset()}
+            disabled={regenerating}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-6 py-3 font-semibold text-white shadow-glow transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          >
+            {regenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Génération...
+              </>
+            ) : autoRegenerate && onRegenerated ? (
+              <>
+                <Sparkles className="h-4 w-4" /> Nouveau quiz
+              </>
+            ) : (
+              <>
+                <RotateCcw className="h-4 w-4" /> Recommencer
+              </>
+            )}
+          </button>
+          {autoRegenerate && onRegenerated && (
+            <button
+              onClick={() => reset({ regenerate: false })}
+              disabled={regenerating}
+              className="inline-flex items-center gap-2 rounded-full bg-white/70 px-5 py-3 text-sm font-semibold text-foreground/80 ring-1 ring-border transition hover:bg-white disabled:opacity-50"
+              title="Refaire le même quiz sans changer les questions"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Refaire le même
+            </button>
+          )}
+        </div>
+        {autoRegenerate && onRegenerated && !regenerating && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            ✨ De nouvelles questions seront générées automatiquement
+          </p>
+        )}
       </motion.div>
     );
   }
