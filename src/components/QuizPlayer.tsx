@@ -113,12 +113,42 @@ export function QuizPlayer({ quiz, onFinished, onRegenerated, autoRegenerate = t
           <TierProgress pct={updated.avg} current={updated.tier} next={upcoming} />
         </div>
 
-        <button
-          onClick={reset}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-6 py-3 font-semibold text-white shadow-glow hover:scale-105"
-        >
-          <RotateCcw className="h-4 w-4" /> Recommencer
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            onClick={() => reset()}
+            disabled={regenerating}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-6 py-3 font-semibold text-white shadow-glow transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          >
+            {regenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Génération...
+              </>
+            ) : autoRegenerate && onRegenerated ? (
+              <>
+                <Sparkles className="h-4 w-4" /> Nouveau quiz
+              </>
+            ) : (
+              <>
+                <RotateCcw className="h-4 w-4" /> Recommencer
+              </>
+            )}
+          </button>
+          {autoRegenerate && onRegenerated && (
+            <button
+              onClick={() => reset({ regenerate: false })}
+              disabled={regenerating}
+              className="inline-flex items-center gap-2 rounded-full bg-white/70 px-5 py-3 text-sm font-semibold text-foreground/80 ring-1 ring-border transition hover:bg-white disabled:opacity-50"
+              title="Refaire le même quiz sans changer les questions"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Refaire le même
+            </button>
+          )}
+        </div>
+        {autoRegenerate && onRegenerated && !regenerating && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            ✨ De nouvelles questions seront générées automatiquement
+          </p>
+        )}
       </motion.div>
     );
   }
