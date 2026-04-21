@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Deck, QuizAttempt } from "@/lib/types";
 import { GRADE_LEVELS } from "@/lib/grade-levels";
 
-export const Route = createFileRoute("/library")({
+export const Route = createFileRoute("/_authenticated/library")({
   head: () => ({
     meta: [
       { title: "Bibliothèque — Graspr" },

@@ -25,7 +25,7 @@ import {
 import { getGradeLevel } from "@/lib/grade-levels";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/english-test")({
+export const Route = createFileRoute("/_authenticated/english-test")({
   head: () => ({
     meta: [
       { title: "Test d'anglais — Graspr" },
