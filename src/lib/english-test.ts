@@ -127,9 +127,12 @@ export async function saveEnglishTest(input: {
   durationSeconds: number;
   history: EnglishAnswered[];
 }) {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) throw new Error("Vous devez être connecté");
   const { data, error } = await supabase
     .from("english_tests")
     .insert({
+      user_id: userData.user.id,
       grade_level: input.gradeLevel,
       speciality: input.speciality,
       cefr_level: input.result.cefr_level,

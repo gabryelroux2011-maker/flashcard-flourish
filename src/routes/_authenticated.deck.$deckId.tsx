@@ -28,7 +28,7 @@ import { GradeBadge } from "@/components/GradeBadge";
 import { getGradeLevel } from "@/lib/grade-levels";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/deck/$deckId")({
+export const Route = createFileRoute("/_authenticated/deck/$deckId")({
   head: ({ params }) => ({
     meta: [
       { title: `Fiche — Graspr` },

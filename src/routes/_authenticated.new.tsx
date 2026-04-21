@@ -8,7 +8,7 @@ import { GradeLevelPicker } from "@/components/GradeLevelPicker";
 import { createDeckFromPack, generatePack } from "@/lib/study";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/new")({
+export const Route = createFileRoute("/_authenticated/new")({
   head: () => ({
     meta: [
       { title: "Nouvelle fiche — Graspr" },

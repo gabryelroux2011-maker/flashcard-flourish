@@ -9,122 +9,180 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NewRouteImport } from './routes/new'
-import { Route as LibraryRouteImport } from './routes/library'
-import { Route as EnglishTestRouteImport } from './routes/english-test'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as DeckDeckIdRouteImport } from './routes/deck.$deckId'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated.new'
+import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated.library'
+import { Route as AuthenticatedEnglishTestRouteImport } from './routes/_authenticated.english-test'
+import { Route as AuthenticatedDeckDeckIdRouteImport } from './routes/_authenticated.deck.$deckId'
 
-const NewRoute = NewRouteImport.update({
-  id: '/new',
-  path: '/new',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LibraryRoute = LibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EnglishTestRoute = EnglishTestRouteImport.update({
-  id: '/english-test',
-  path: '/english-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const DeckDeckIdRoute = DeckDeckIdRouteImport.update({
+const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedEnglishTestRoute =
+  AuthenticatedEnglishTestRouteImport.update({
+    id: '/english-test',
+    path: '/english-test',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDeckDeckIdRoute = AuthenticatedDeckDeckIdRouteImport.update({
   id: '/deck/$deckId',
   path: '/deck/$deckId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/english-test': typeof EnglishTestRoute
-  '/library': typeof LibraryRoute
-  '/new': typeof NewRoute
-  '/deck/$deckId': typeof DeckDeckIdRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/auth': typeof AuthRoute
+  '/english-test': typeof AuthenticatedEnglishTestRoute
+  '/library': typeof AuthenticatedLibraryRoute
+  '/new': typeof AuthenticatedNewRoute
+  '/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/english-test': typeof EnglishTestRoute
-  '/library': typeof LibraryRoute
-  '/new': typeof NewRoute
-  '/deck/$deckId': typeof DeckDeckIdRoute
+  '/auth': typeof AuthRoute
+  '/english-test': typeof AuthenticatedEnglishTestRoute
+  '/library': typeof AuthenticatedLibraryRoute
+  '/new': typeof AuthenticatedNewRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/english-test': typeof EnglishTestRoute
-  '/library': typeof LibraryRoute
-  '/new': typeof NewRoute
-  '/deck/$deckId': typeof DeckDeckIdRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/english-test': typeof AuthenticatedEnglishTestRoute
+  '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/_authenticated/new': typeof AuthenticatedNewRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/english-test' | '/library' | '/new' | '/deck/$deckId'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/english-test'
+    | '/library'
+    | '/new'
+    | '/deck/$deckId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/english-test' | '/library' | '/new' | '/deck/$deckId'
-  id: '__root__' | '/' | '/english-test' | '/library' | '/new' | '/deck/$deckId'
+  to: '/auth' | '/english-test' | '/library' | '/new' | '/' | '/deck/$deckId'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/english-test'
+    | '/_authenticated/library'
+    | '/_authenticated/new'
+    | '/_authenticated/'
+    | '/_authenticated/deck/$deckId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  EnglishTestRoute: typeof EnglishTestRoute
-  LibraryRoute: typeof LibraryRoute
-  NewRoute: typeof NewRoute
-  DeckDeckIdRoute: typeof DeckDeckIdRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/new': {
-      id: '/new'
-      path: '/new'
-      fullPath: '/new'
-      preLoaderRoute: typeof NewRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/library': {
-      id: '/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof LibraryRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/english-test': {
-      id: '/english-test'
-      path: '/english-test'
-      fullPath: '/english-test'
-      preLoaderRoute: typeof EnglishTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/deck/$deckId': {
-      id: '/deck/$deckId'
+    '/_authenticated/new': {
+      id: '/_authenticated/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof AuthenticatedNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/library': {
+      id: '/_authenticated/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/english-test': {
+      id: '/_authenticated/english-test'
+      path: '/english-test'
+      fullPath: '/english-test'
+      preLoaderRoute: typeof AuthenticatedEnglishTestRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/deck/$deckId': {
+      id: '/_authenticated/deck/$deckId'
       path: '/deck/$deckId'
       fullPath: '/deck/$deckId'
-      preLoaderRoute: typeof DeckDeckIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedDeckDeckIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedEnglishTestRoute: typeof AuthenticatedEnglishTestRoute
+  AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedNewRoute: typeof AuthenticatedNewRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedDeckDeckIdRoute: typeof AuthenticatedDeckDeckIdRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedEnglishTestRoute: AuthenticatedEnglishTestRoute,
+  AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedNewRoute: AuthenticatedNewRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedDeckDeckIdRoute: AuthenticatedDeckDeckIdRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  EnglishTestRoute: EnglishTestRoute,
-  LibraryRoute: LibraryRoute,
-  NewRoute: NewRoute,
-  DeckDeckIdRoute: DeckDeckIdRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

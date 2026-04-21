@@ -8,7 +8,7 @@ import { listDecks } from "@/lib/study";
 import { supabase } from "@/integrations/supabase/client";
 import type { Deck, QuizAttempt } from "@/lib/types";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Dashboard — Graspr" },

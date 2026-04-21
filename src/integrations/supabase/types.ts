@@ -63,6 +63,7 @@ export type Database = {
           tags: string[]
           title: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -74,6 +75,7 @@ export type Database = {
           tags?: string[]
           title: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -85,6 +87,7 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -110,6 +113,7 @@ export type Database = {
           question_count: number
           questions: Json
           speciality: string | null
+          user_id: string
           vocabulary_score: number | null
         }
         Insert: {
@@ -125,6 +129,7 @@ export type Database = {
           question_count?: number
           questions?: Json
           speciality?: string | null
+          user_id: string
           vocabulary_score?: number | null
         }
         Update: {
@@ -140,6 +145,7 @@ export type Database = {
           question_count?: number
           questions?: Json
           speciality?: string | null
+          user_id?: string
           vocabulary_score?: number | null
         }
         Relationships: []
@@ -150,18 +156,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          user_id: string
         }
         Insert: {
           color?: string
           created_at?: string
           id?: string
           name: string
+          user_id: string
         }
         Update: {
           color?: string
           created_at?: string
           id?: string
           name?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -199,6 +208,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          accent_color: string
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       quizzes: {
         Row: {

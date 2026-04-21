@@ -23,14 +23,22 @@ export async function generatePack(text: string, existing = false) {
   return data.pack;
 }
 
+async function currentUserId() {
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) throw new Error("Vous devez être connecté");
+  return data.user.id;
+}
+
 export async function createDeckFromPack(
   pack: AIPack,
   sourceText: string,
   options: { folderId?: string | null; gradeLevel?: string | null } = {},
 ) {
+  const userId = await currentUserId();
   const { data: deck, error: deckErr } = await supabase
     .from("decks")
     .insert({
+      user_id: userId,
       title: pack.deck_title,
       description: pack.deck_description,
       source_text: sourceText,
@@ -257,7 +265,12 @@ export async function listFolders() {
 }
 
 export async function createFolder(name: string, color: string) {
-  const { data, error } = await supabase.from("folders").insert({ name, color }).select().single();
+  const userId = await currentUserId();
+  const { data, error } = await supabase
+    .from("folders")
+    .insert({ name, color, user_id: userId })
+    .select()
+    .single();
   if (error) throw error;
   return data as Folder;
 }
