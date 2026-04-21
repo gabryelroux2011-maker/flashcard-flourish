@@ -1,9 +1,15 @@
-// Tracking de temps total + streak quotidien (mono-utilisateur, localStorage)
+// Tracking de temps total + streak quotidien, namespacé par utilisateur (localStorage)
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/lib/auth";
 
-const KEY = "graspr.timeStats.v1";
+const KEY_PREFIX = "graspr.timeStats.v2:";
+const ANON_KEY = `${KEY_PREFIX}anon`;
 const TICK_MS = 15_000; // sauvegarde toutes les 15s
 const IDLE_MS = 60_000; // pas de tick si > 60s sans activité
+
+function storageKey(userId: string | null | undefined) {
+  return userId ? `${KEY_PREFIX}${userId}` : ANON_KEY;
+}
 
 export interface TimeStats {
   totalMs: number;
@@ -33,10 +39,10 @@ function diffDays(a: string, b: string): number {
   return Math.round((db - da) / 86_400_000);
 }
 
-export function readStats(): TimeStats {
+export function readStats(userId: string | null | undefined): TimeStats {
   if (typeof window === "undefined") return empty;
   try {
-    const raw = window.localStorage.getItem(KEY);
+    const raw = window.localStorage.getItem(storageKey(userId));
     if (!raw) return { ...empty, firstSeen: Date.now() };
     const parsed = JSON.parse(raw) as TimeStats;
     return { ...empty, ...parsed };
@@ -45,9 +51,9 @@ export function readStats(): TimeStats {
   }
 }
 
-function writeStats(s: TimeStats) {
+function writeStats(userId: string | null | undefined, s: TimeStats) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(s));
+  window.localStorage.setItem(storageKey(userId), JSON.stringify(s));
 }
 
 function bumpStreak(stats: TimeStats): TimeStats {
@@ -68,23 +74,27 @@ function bumpStreak(stats: TimeStats): TimeStats {
   };
 }
 
-/** Hook qui suit le temps actif sur l'app et persiste dans localStorage. */
+/** Hook qui suit le temps actif sur l'app et persiste dans localStorage, par utilisateur. */
 export function useTimeTracker(): TimeStats {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   // Toujours démarrer avec `empty` côté client pour matcher le SSR et éviter
   // les erreurs d'hydratation. Les vraies stats sont chargées dans useEffect.
   const [stats, setStats] = useState<TimeStats>(empty);
   const lastActivity = useRef<number>(Date.now());
   const lastTick = useRef<number>(Date.now());
+  const userIdRef = useRef<string | null>(userId);
 
   useEffect(() => {
+    userIdRef.current = userId;
     if (typeof window === "undefined") return;
 
-    // Charge les stats persistées et marque le jour actif
-    setStats(() => {
-      const next = bumpStreak(readStats());
-      writeStats(next);
-      return next;
-    });
+    // Recharge les stats pour ce compte et marque le jour actif
+    const next = bumpStreak(readStats(userId));
+    writeStats(userId, next);
+    setStats(next);
+    lastTick.current = Date.now();
+    lastActivity.current = Date.now();
 
     const markActivity = () => {
       lastActivity.current = Date.now();
@@ -100,7 +110,7 @@ export function useTimeTracker(): TimeStats {
       if (idle > IDLE_MS || document.hidden) return;
       setStats((s) => {
         const next = bumpStreak({ ...s, totalMs: s.totalMs + elapsed });
-        writeStats(next);
+        writeStats(userIdRef.current, next);
         return next;
       });
     }, TICK_MS);
@@ -114,8 +124,8 @@ export function useTimeTracker(): TimeStats {
     const onUnload = () => {
       const now = Date.now();
       const elapsed = Math.min(now - lastTick.current, TICK_MS);
-      const current = readStats();
-      writeStats(bumpStreak({ ...current, totalMs: current.totalMs + elapsed }));
+      const current = readStats(userIdRef.current);
+      writeStats(userIdRef.current, bumpStreak({ ...current, totalMs: current.totalMs + elapsed }));
     };
     window.addEventListener("beforeunload", onUnload);
 
@@ -125,7 +135,7 @@ export function useTimeTracker(): TimeStats {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("beforeunload", onUnload);
     };
-  }, []);
+  }, [userId]);
 
   return stats;
 }
