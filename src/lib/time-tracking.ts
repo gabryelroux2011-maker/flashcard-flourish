@@ -1,9 +1,15 @@
-// Tracking de temps total + streak quotidien (mono-utilisateur, localStorage)
+// Tracking de temps total + streak quotidien, namespacé par utilisateur (localStorage)
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/lib/auth";
 
-const KEY = "graspr.timeStats.v1";
+const KEY_PREFIX = "graspr.timeStats.v2:";
+const ANON_KEY = `${KEY_PREFIX}anon`;
 const TICK_MS = 15_000; // sauvegarde toutes les 15s
 const IDLE_MS = 60_000; // pas de tick si > 60s sans activité
+
+function storageKey(userId: string | null | undefined) {
+  return userId ? `${KEY_PREFIX}${userId}` : ANON_KEY;
+}
 
 export interface TimeStats {
   totalMs: number;
