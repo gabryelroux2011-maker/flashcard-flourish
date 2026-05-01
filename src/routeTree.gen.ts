@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated.new'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated.library'
 import { Route as AuthenticatedEnglishTestRouteImport } from './routes/_authenticated.english-test'
+import { Route as AuthenticatedCurriculumRouteImport } from './routes/_authenticated.curriculum'
 import { Route as AuthenticatedDeckDeckIdRouteImport } from './routes/_authenticated.deck.$deckId'
 
 const AuthRoute = AuthRouteImport.update({
@@ -47,6 +48,11 @@ const AuthenticatedEnglishTestRoute =
     path: '/english-test',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCurriculumRoute = AuthenticatedCurriculumRouteImport.update({
+  id: '/curriculum',
+  path: '/curriculum',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDeckDeckIdRoute = AuthenticatedDeckDeckIdRouteImport.update({
   id: '/deck/$deckId',
   path: '/deck/$deckId',
@@ -56,6 +62,7 @@ const AuthenticatedDeckDeckIdRoute = AuthenticatedDeckDeckIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/curriculum': typeof AuthenticatedCurriculumRoute
   '/english-test': typeof AuthenticatedEnglishTestRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/curriculum': typeof AuthenticatedCurriculumRoute
   '/english-test': typeof AuthenticatedEnglishTestRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
@@ -73,6 +81,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/curriculum': typeof AuthenticatedCurriculumRoute
   '/_authenticated/english-test': typeof AuthenticatedEnglishTestRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
@@ -84,16 +93,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/curriculum'
     | '/english-test'
     | '/library'
     | '/new'
     | '/deck/$deckId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/english-test' | '/library' | '/new' | '/' | '/deck/$deckId'
+  to:
+    | '/auth'
+    | '/curriculum'
+    | '/english-test'
+    | '/library'
+    | '/new'
+    | '/'
+    | '/deck/$deckId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/curriculum'
     | '/_authenticated/english-test'
     | '/_authenticated/library'
     | '/_authenticated/new'
@@ -150,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEnglishTestRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/curriculum': {
+      id: '/_authenticated/curriculum'
+      path: '/curriculum'
+      fullPath: '/curriculum'
+      preLoaderRoute: typeof AuthenticatedCurriculumRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/deck/$deckId': {
       id: '/_authenticated/deck/$deckId'
       path: '/deck/$deckId'
@@ -161,6 +186,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCurriculumRoute: typeof AuthenticatedCurriculumRoute
   AuthenticatedEnglishTestRoute: typeof AuthenticatedEnglishTestRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
@@ -169,6 +195,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCurriculumRoute: AuthenticatedCurriculumRoute,
   AuthenticatedEnglishTestRoute: AuthenticatedEnglishTestRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
