@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Sparkles, LayoutDashboard, FolderTree, Plus, Languages, LogOut, Palette, Check } from "lucide-react";
+import { Sparkles, LayoutDashboard, FolderTree, Plus, Languages, LogOut, Palette, Check, BookMarked } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TimeWidget } from "@/components/TimeWidget";
