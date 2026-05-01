@@ -42,10 +42,7 @@ export const Route = createRootRoute({
         content: "Fiches, quiz et cartes mentales générés en un clic.",
       },
       { property: "og:type", content: "website" },
-      { name: "theme-color", content: "#6366f1" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "Graspr" },
+      { name: "twitter:title", content: "Graspr — Révisions intelligentes" },
       { name: "description", content: "Study Buddy Pro transforms your study materials into interactive flashcards, quizzes, and mind maps." },
       { property: "og:description", content: "Study Buddy Pro transforms your study materials into interactive flashcards, quizzes, and mind maps." },
       { name: "twitter:description", content: "Study Buddy Pro transforms your study materials into interactive flashcards, quizzes, and mind maps." },
@@ -53,8 +50,7 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fb599f30-c913-4dbc-9bb5-552f111de4e4/id-preview-6dd6aec3--163fac60-2687-4abf-afbc-f973de0254ce.lovable.app-1776702546342.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-   links: [
-      { rel: "manifest", href: "/manifest.json" },
+    links: [
       { rel: "stylesheet", href: appCss },
       {
         rel: "stylesheet",
