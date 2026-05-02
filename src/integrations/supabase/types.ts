@@ -52,6 +52,93 @@ export type Database = {
           },
         ]
       }
+      chapter_lessons: {
+        Row: {
+          chapter_index: number
+          chapter_title: string
+          created_at: string
+          exercises: Json
+          id: string
+          intro: string
+          lesson: string
+          level_id: string
+          quiz: Json
+          subject: string
+        }
+        Insert: {
+          chapter_index: number
+          chapter_title: string
+          created_at?: string
+          exercises?: Json
+          id?: string
+          intro: string
+          lesson: string
+          level_id: string
+          quiz?: Json
+          subject: string
+        }
+        Update: {
+          chapter_index?: number
+          chapter_title?: string
+          created_at?: string
+          exercises?: Json
+          id?: string
+          intro?: string
+          lesson?: string
+          level_id?: string
+          quiz?: Json
+          subject?: string
+        }
+        Relationships: []
+      }
+      chapter_progress: {
+        Row: {
+          best_quiz_score: number
+          chapter_index: number
+          created_at: string
+          exercises_done: number
+          exercises_total: number
+          id: string
+          last_seen_at: string
+          level_id: string
+          quiz_total: number
+          subject: string
+          updated_at: string
+          user_id: string
+          viewed: boolean
+        }
+        Insert: {
+          best_quiz_score?: number
+          chapter_index: number
+          created_at?: string
+          exercises_done?: number
+          exercises_total?: number
+          id?: string
+          last_seen_at?: string
+          level_id: string
+          quiz_total?: number
+          subject: string
+          updated_at?: string
+          user_id: string
+          viewed?: boolean
+        }
+        Update: {
+          best_quiz_score?: number
+          chapter_index?: number
+          created_at?: string
+          exercises_done?: number
+          exercises_total?: number
+          id?: string
+          last_seen_at?: string
+          level_id?: string
+          quiz_total?: number
+          subject?: string
+          updated_at?: string
+          user_id?: string
+          viewed?: boolean
+        }
+        Relationships: []
+      }
       decks: {
         Row: {
           created_at: string

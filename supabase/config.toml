@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.english-test-next]
 verify_jwt = false
+
+[functions.generate-chapter-lesson]
+verify_jwt = false

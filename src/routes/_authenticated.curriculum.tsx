@@ -244,25 +244,36 @@ function SubjectAccordion({
             transition={{ duration: 0.25 }}
           >
             <ol className="space-y-1.5 border-t border-border bg-gradient-to-br from-white to-white/50 p-4">
-              {subject.chapters.map((ch, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-primary/5"
-                >
-                  <span
-                    className={cn(
-                      "mt-0.5 inline-grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br text-[10px] font-bold text-white",
-                      subject.gradient,
-                    )}
-                  >
-                    {i + 1}
-                  </span>
-                  <span
-                    className="text-sm leading-relaxed text-foreground/80"
-                    dangerouslySetInnerHTML={{ __html: highlightText(ch, highlight) }}
-                  />
-                </li>
-              ))}
+              {subject.chapters.map((ch, i) => {
+                const subjectSlug = encodeURIComponent(subject.subject);
+                return (
+                  <li key={i}>
+                    <Link
+                      to="/curriculum/$levelId/$subject/$chapterIdx"
+                      params={{
+                        levelId: level.id,
+                        subject: subjectSlug,
+                        chapterIdx: String(i),
+                      }}
+                      className="group flex items-start gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-primary/5"
+                    >
+                      <span
+                        className={cn(
+                          "mt-0.5 inline-grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br text-[10px] font-bold text-white",
+                          subject.gradient,
+                        )}
+                      >
+                        {i + 1}
+                      </span>
+                      <span
+                        className="flex-1 text-sm leading-relaxed text-foreground/80 group-hover:text-foreground"
+                        dangerouslySetInnerHTML={{ __html: highlightText(ch, highlight) }}
+                      />
+                      <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                    </Link>
+                  </li>
+                );
+              })}
             </ol>
           </motion.div>
         )}
