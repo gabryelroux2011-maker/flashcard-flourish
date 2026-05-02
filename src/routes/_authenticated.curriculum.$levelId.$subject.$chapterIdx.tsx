@@ -117,16 +117,18 @@ function ChapterPage() {
           if (cancelled) return;
           setContent(lesson);
           // 3. sauver en cache
-          await supabase.from("chapter_lessons").insert({
-            level_id: levelId,
-            subject: subjectName,
-            chapter_index: idx,
-            chapter_title: chapterTitle!,
-            intro: lesson.intro,
-            lesson: lesson.lesson,
-            quiz: lesson.quiz,
-            exercises: lesson.exercises,
-          });
+          await supabase.from("chapter_lessons").insert([
+            {
+              level_id: levelId,
+              subject: subjectName,
+              chapter_index: idx,
+              chapter_title: chapterTitle!,
+              intro: lesson.intro,
+              lesson: lesson.lesson,
+              quiz: lesson.quiz as never,
+              exercises: lesson.exercises as never,
+            },
+          ]);
         }
 
         // 4. progression user
