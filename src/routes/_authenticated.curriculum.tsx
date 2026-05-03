@@ -245,14 +245,13 @@ function SubjectAccordion({
           >
             <ol className="space-y-1.5 border-t border-border bg-gradient-to-br from-white to-white/50 p-4">
               {subject.chapters.map((ch, i) => {
-                const subjectSlug = encodeURIComponent(subject.subject);
                 return (
                   <li key={i}>
                     <Link
                       to="/curriculum/$levelId/$subject/$chapterIdx"
                       params={{
                         levelId: level.id,
-                        subject: subjectSlug,
+                        subject: subject.subject,
                         chapterIdx: String(i),
                       }}
                       className="group flex items-start gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-primary/5"
