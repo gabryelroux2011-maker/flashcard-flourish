@@ -54,7 +54,15 @@ function ChapterPage() {
   const { levelId, subject: subjectSlug, chapterIdx } = Route.useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const subjectName = decodeURIComponent(subjectSlug);
+  // Décodage robuste : gère les anciens liens éventuellement double-encodés
+  const subjectName = (() => {
+    let s = subjectSlug;
+    try { s = decodeURIComponent(s); } catch { /* noop */ }
+    if (/%[0-9A-Fa-f]{2}/.test(s)) {
+      try { s = decodeURIComponent(s); } catch { /* noop */ }
+    }
+    return s;
+  })();
   const idx = parseInt(chapterIdx, 10);
 
   const level = useMemo(() => CURRICULUM.find((l) => l.id === levelId), [levelId]);
