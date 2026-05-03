@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -19,8 +19,13 @@ export const Route = createFileRoute("/_authenticated/curriculum")({
       },
     ],
   }),
-  component: CurriculumPage,
+  component: CurriculumRoute,
 });
+
+function CurriculumRoute() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  return pathname === "/curriculum" ? <CurriculumPage /> : <Outlet />;
+}
 
 function CurriculumPage() {
   const [activeLevelId, setActiveLevelId] = useState<string>(CURRICULUM[0].id);
