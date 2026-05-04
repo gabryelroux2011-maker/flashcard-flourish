@@ -22,6 +22,16 @@ export interface LevelCurriculum {
   subjects: SubjectChapters[];
 }
 
+export function getSubjectSlug(subject: string) {
+  return subject
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " et ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 // Palettes par matière (réutilisées)
 const S = {
   maths: { icon: "🧮", gradient: "from-blue-500 to-indigo-600" },
