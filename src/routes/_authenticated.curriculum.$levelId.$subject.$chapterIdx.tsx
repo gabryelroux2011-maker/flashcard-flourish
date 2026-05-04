@@ -6,7 +6,7 @@ import {
   Lightbulb, Eye, EyeOff, Loader2, RefreshCw, Trophy, Target,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { CURRICULUM } from "@/lib/curriculum";
+import { CURRICULUM, getSubjectSlug } from "@/lib/curriculum";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -67,7 +67,10 @@ function ChapterPage() {
 
   const level = useMemo(() => CURRICULUM.find((l) => l.id === levelId), [levelId]);
   const subject = useMemo(
-    () => level?.subjects.find((s) => s.subject === subjectName) ?? null,
+    () =>
+      level?.subjects.find(
+        (s) => s.subject === subjectName || getSubjectSlug(s.subject) === subjectName,
+      ) ?? null,
     [level, subjectName],
   );
   const chapterTitle = subject?.chapters[idx];
