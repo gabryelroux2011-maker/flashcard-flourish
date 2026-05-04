@@ -5,7 +5,7 @@ import {
   BookMarked, GraduationCap, ChevronRight, ChevronDown, Search, Sparkles, Filter,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { CURRICULUM, type LevelCurriculum, type SubjectChapters } from "@/lib/curriculum";
+import { CURRICULUM, getSubjectSlug, type LevelCurriculum, type SubjectChapters } from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/curriculum")({
@@ -256,7 +256,7 @@ function SubjectAccordion({
                       to="/curriculum/$levelId/$subject/$chapterIdx"
                       params={{
                         levelId: level.id,
-                        subject: subject.subject,
+                        subject: getSubjectSlug(subject.subject),
                         chapterIdx: String(i),
                       }}
                       className="group flex items-start gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-primary/5"
