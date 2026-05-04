@@ -635,10 +635,7 @@ const premiereCommon: SubjectChapters[] = [
   {
     subject: "EMC",
     ...S.emc,
-    chapters: [
-      "Fondements et fragilités du lien social",
-      "Les recompositions du lien social",
-    ],
+    chapters: ["Fondements et fragilités du lien social", "Les recompositions du lien social"],
   },
 ];
 

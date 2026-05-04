@@ -2,10 +2,21 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BookMarked, GraduationCap, ChevronRight, ChevronDown, Search, Sparkles, Filter,
+  BookMarked,
+  GraduationCap,
+  ChevronRight,
+  ChevronDown,
+  Search,
+  Sparkles,
+  Filter,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { CURRICULUM, getSubjectSlug, type LevelCurriculum, type SubjectChapters } from "@/lib/curriculum";
+import {
+  CURRICULUM,
+  getSubjectSlug,
+  type LevelCurriculum,
+  type SubjectChapters,
+} from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/curriculum")({
@@ -157,9 +168,7 @@ function CurriculumPage() {
                 key={subj.subject}
                 subject={subj}
                 open={openSubject === subj.subject}
-                onToggle={() =>
-                  setOpenSubject(openSubject === subj.subject ? null : subj.subject)
-                }
+                onToggle={() => setOpenSubject(openSubject === subj.subject ? null : subj.subject)}
                 level={activeLevel}
                 highlight={query}
               />
