@@ -73,6 +73,7 @@ function ChapterPage() {
       ) ?? null,
     [level, subjectName],
   );
+  const canonicalSubjectName = subject?.subject ?? subjectName;
   const chapterTitle = subject?.chapters[idx];
 
   const [tab, setTab] = useState<Tab>("lesson");
@@ -96,7 +97,7 @@ function ChapterPage() {
           .from("chapter_lessons")
           .select("intro, lesson, quiz, exercises")
           .eq("level_id", levelId)
-          .eq("subject", subjectName)
+          .eq("subject", canonicalSubjectName)
           .eq("chapter_index", idx)
           .maybeSingle();
 
@@ -117,7 +118,7 @@ function ChapterPage() {
             {
               body: {
                 levelLabel: level!.label,
-                subject: subjectName,
+                subject: canonicalSubjectName,
                 chapterTitle,
               },
             },
@@ -131,7 +132,7 @@ function ChapterPage() {
           await supabase.from("chapter_lessons").insert([
             {
               level_id: levelId,
-              subject: subjectName,
+              subject: canonicalSubjectName,
               chapter_index: idx,
               chapter_title: chapterTitle!,
               intro: lesson.intro,
@@ -149,7 +150,7 @@ function ChapterPage() {
             .select("id, best_quiz_score, quiz_total, exercises_done, exercises_total")
             .eq("user_id", user.id)
             .eq("level_id", levelId)
-            .eq("subject", subjectName)
+            .eq("subject", canonicalSubjectName)
             .eq("chapter_index", idx)
             .maybeSingle();
 
@@ -164,7 +165,7 @@ function ChapterPage() {
               .insert({
                 user_id: user.id,
                 level_id: levelId,
-                subject: subjectName,
+                subject: canonicalSubjectName,
                 chapter_index: idx,
                 viewed: true,
               })
@@ -188,7 +189,7 @@ function ChapterPage() {
     return () => {
       cancelled = true;
     };
-  }, [levelId, subjectName, idx, chapterTitle, level, subject, user]);
+  }, [levelId, subjectName, canonicalSubjectName, idx, chapterTitle, level, subject, user]);
 
   if (!level || !subject || !chapterTitle || isNaN(idx)) {
     return (
