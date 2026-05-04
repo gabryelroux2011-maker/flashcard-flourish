@@ -2,19 +2,29 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, BookOpen, Brain, Dumbbell, Sparkles, CheckCircle2, XCircle,
-  Lightbulb, Eye, EyeOff, Loader2, RefreshCw, Trophy, Target,
+  ArrowLeft,
+  BookOpen,
+  Brain,
+  Dumbbell,
+  Sparkles,
+  CheckCircle2,
+  XCircle,
+  Lightbulb,
+  Eye,
+  EyeOff,
+  Loader2,
+  RefreshCw,
+  Trophy,
+  Target,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { CURRICULUM } from "@/lib/curriculum";
+import { CURRICULUM, getSubjectSlug } from "@/lib/curriculum";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export const Route = createFileRoute(
-  "/_authenticated/curriculum/$levelId/$subject/$chapterIdx",
-)({
+export const Route = createFileRoute("/_authenticated/curriculum/$levelId/$subject/$chapterIdx")({
   head: ({ params }) => ({
     meta: [
       { title: `Chapitre — ${decodeURIComponent(params.subject)} — Graspr` },
@@ -57,9 +67,17 @@ function ChapterPage() {
   // Décodage robuste : gère les anciens liens éventuellement double-encodés
   const subjectName = (() => {
     let s = subjectSlug;
-    try { s = decodeURIComponent(s); } catch { /* noop */ }
+    try {
+      s = decodeURIComponent(s);
+    } catch {
+      /* noop */
+    }
     if (/%[0-9A-Fa-f]{2}/.test(s)) {
-      try { s = decodeURIComponent(s); } catch { /* noop */ }
+      try {
+        s = decodeURIComponent(s);
+      } catch {
+        /* noop */
+      }
     }
     return s;
   })();
@@ -67,9 +85,13 @@ function ChapterPage() {
 
   const level = useMemo(() => CURRICULUM.find((l) => l.id === levelId), [levelId]);
   const subject = useMemo(
-    () => level?.subjects.find((s) => s.subject === subjectName) ?? null,
+    () =>
+      level?.subjects.find(
+        (s) => s.subject === subjectName || getSubjectSlug(s.subject) === subjectName,
+      ) ?? null,
     [level, subjectName],
   );
+  const canonicalSubjectName = subject?.subject ?? subjectName;
   const chapterTitle = subject?.chapters[idx];
 
   const [tab, setTab] = useState<Tab>("lesson");
@@ -93,7 +115,7 @@ function ChapterPage() {
           .from("chapter_lessons")
           .select("intro, lesson, quiz, exercises")
           .eq("level_id", levelId)
-          .eq("subject", subjectName)
+          .eq("subject", canonicalSubjectName)
           .eq("chapter_index", idx)
           .maybeSingle();
 
@@ -109,16 +131,13 @@ function ChapterPage() {
         } else {
           // 2. générer via edge
           setGenerating(true);
-          const { data, error } = await supabase.functions.invoke(
-            "generate-chapter-lesson",
-            {
-              body: {
-                levelLabel: level!.label,
-                subject: subjectName,
-                chapterTitle,
-              },
+          const { data, error } = await supabase.functions.invoke("generate-chapter-lesson", {
+            body: {
+              levelLabel: level!.label,
+              subject: canonicalSubjectName,
+              chapterTitle,
             },
-          );
+          });
           if (error) throw error;
           if (data?.error) throw new Error(data.error);
           const lesson = data.lesson as LessonContent;
@@ -128,7 +147,7 @@ function ChapterPage() {
           await supabase.from("chapter_lessons").insert([
             {
               level_id: levelId,
-              subject: subjectName,
+              subject: canonicalSubjectName,
               chapter_index: idx,
               chapter_title: chapterTitle!,
               intro: lesson.intro,
@@ -146,7 +165,7 @@ function ChapterPage() {
             .select("id, best_quiz_score, quiz_total, exercises_done, exercises_total")
             .eq("user_id", user.id)
             .eq("level_id", levelId)
-            .eq("subject", subjectName)
+            .eq("subject", canonicalSubjectName)
             .eq("chapter_index", idx)
             .maybeSingle();
 
@@ -161,7 +180,7 @@ function ChapterPage() {
               .insert({
                 user_id: user.id,
                 level_id: levelId,
-                subject: subjectName,
+                subject: canonicalSubjectName,
                 chapter_index: idx,
                 viewed: true,
               })
@@ -185,7 +204,7 @@ function ChapterPage() {
     return () => {
       cancelled = true;
     };
-  }, [levelId, subjectName, idx, chapterTitle, level, subject, user]);
+  }, [levelId, subjectName, canonicalSubjectName, idx, chapterTitle, level, subject, user]);
 
   if (!level || !subject || !chapterTitle || isNaN(idx)) {
     return (
@@ -232,9 +251,7 @@ function ChapterPage() {
               Chapitre {idx + 1} — {chapterTitle}
             </h1>
             {content && !loading && (
-              <p className="mt-3 max-w-2xl text-sm text-white/90 md:text-base">
-                {content.intro}
-              </p>
+              <p className="mt-3 max-w-2xl text-sm text-white/90 md:text-base">{content.intro}</p>
             )}
           </div>
         </motion.div>
@@ -268,11 +285,7 @@ function ChapterPage() {
         {loading && (
           <div className="rounded-3xl bg-white/80 p-10 text-center shadow-soft">
             <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-primary" />
-            <p className="font-semibold">
-              {generating
-                ? "L'IA prépare ta fiche…"
-                : "Chargement…"}
-            </p>
+            <p className="font-semibold">{generating ? "L'IA prépare ta fiche…" : "Chargement…"}</p>
             <p className="text-xs text-muted-foreground">
               Ça peut prendre quelques secondes la première fois.
             </p>
@@ -296,8 +309,7 @@ function ChapterPage() {
                   bestScore={bestScore}
                   onComplete={async (score, total) => {
                     if (!user || !progressId) return;
-                    const newBest =
-                      !bestScore || score > bestScore.s ? score : bestScore.s;
+                    const newBest = !bestScore || score > bestScore.s ? score : bestScore.s;
                     await supabase
                       .from("chapter_progress")
                       .update({
@@ -370,10 +382,7 @@ function LessonView({ markdown }: { markdown: string }) {
 
 function renderMarkdown(md: string): string {
   // Mini renderer (titres, listes, gras, italique, code, paragraphes, sauts de ligne)
-  const esc = md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  const esc = md.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const lines = esc.split("\n");
   const out: string[] = [];
   let inList = false;
@@ -461,10 +470,7 @@ function QuizView({
   const isCorrect = (q: QuizQ, ans?: string) =>
     !!ans && ans.trim().toLowerCase() === q.answer.trim().toLowerCase();
 
-  const score = questions.reduce(
-    (acc, q, i) => acc + (isCorrect(q, answers[i]) ? 1 : 0),
-    0,
-  );
+  const score = questions.reduce((acc, q, i) => acc + (isCorrect(q, answers[i]) ? 1 : 0), 0);
 
   const submit = () => {
     setSubmitted(true);
@@ -481,7 +487,10 @@ function QuizView({
       {bestScore && bestScore.t > 0 && !submitted && (
         <div className="flex items-center gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
           <Trophy className="h-4 w-4" />
-          Meilleur score : <strong>{bestScore.s}/{bestScore.t}</strong>
+          Meilleur score :{" "}
+          <strong>
+            {bestScore.s}/{bestScore.t}
+          </strong>
         </div>
       )}
 
@@ -494,11 +503,7 @@ function QuizView({
             key={i}
             className={cn(
               "rounded-2xl bg-white/85 p-5 shadow-soft ring-1 transition-colors",
-              submitted
-                ? correct
-                  ? "ring-emerald-300"
-                  : "ring-rose-300"
-                : "ring-border",
+              submitted ? (correct ? "ring-emerald-300" : "ring-rose-300") : "ring-border",
             )}
           >
             <div className="mb-3 flex items-start justify-between gap-3">

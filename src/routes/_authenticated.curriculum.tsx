@@ -1,11 +1,22 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BookMarked, GraduationCap, ChevronRight, ChevronDown, Search, Sparkles, Filter,
+  BookMarked,
+  GraduationCap,
+  ChevronRight,
+  ChevronDown,
+  Search,
+  Sparkles,
+  Filter,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { CURRICULUM, type LevelCurriculum, type SubjectChapters } from "@/lib/curriculum";
+import {
+  CURRICULUM,
+  getSubjectSlug,
+  type LevelCurriculum,
+  type SubjectChapters,
+} from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/curriculum")({
@@ -157,9 +168,7 @@ function CurriculumPage() {
                 key={subj.subject}
                 subject={subj}
                 open={openSubject === subj.subject}
-                onToggle={() =>
-                  setOpenSubject(openSubject === subj.subject ? null : subj.subject)
-                }
+                onToggle={() => setOpenSubject(openSubject === subj.subject ? null : subj.subject)}
                 level={activeLevel}
                 highlight={query}
               />
@@ -200,6 +209,8 @@ function SubjectAccordion({
   level: LevelCurriculum;
   highlight: string;
 }) {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       layout
@@ -252,14 +263,19 @@ function SubjectAccordion({
               {subject.chapters.map((ch, i) => {
                 return (
                   <li key={i}>
-                    <Link
-                      to="/curriculum/$levelId/$subject/$chapterIdx"
-                      params={{
-                        levelId: level.id,
-                        subject: subject.subject,
-                        chapterIdx: String(i),
-                      }}
-                      className="group flex items-start gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-primary/5"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate({
+                          to: "/curriculum/$levelId/$subject/$chapterIdx",
+                          params: {
+                            levelId: level.id,
+                            subject: getSubjectSlug(subject.subject),
+                            chapterIdx: String(i),
+                          },
+                        })
+                      }
+                      className="group flex w-full touch-manipulation items-start gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-primary/5"
                     >
                       <span
                         className={cn(
@@ -274,7 +290,7 @@ function SubjectAccordion({
                         dangerouslySetInnerHTML={{ __html: highlightText(ch, highlight) }}
                       />
                       <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                    </Link>
+                    </button>
                   </li>
                 );
               })}
