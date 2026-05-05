@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,7 +20,21 @@ import {
 import { cn } from "@/lib/utils";
 import { ChapterLessonPage } from "@/components/ChapterLessonPage";
 
+interface CurriculumSearch {
+  levelId?: string;
+  subject?: string;
+  chapterIdx?: string | number;
+}
+
 export const Route = createFileRoute("/_authenticated/curriculum")({
+  validateSearch: (search: Record<string, unknown>): CurriculumSearch => ({
+    levelId: typeof search.levelId === "string" ? search.levelId : undefined,
+    subject: typeof search.subject === "string" ? search.subject : undefined,
+    chapterIdx:
+      typeof search.chapterIdx === "string" || typeof search.chapterIdx === "number"
+        ? search.chapterIdx
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Référentiel scolaire — Graspr" },
@@ -35,18 +49,14 @@ export const Route = createFileRoute("/_authenticated/curriculum")({
 });
 
 function CurriculumRoute() {
-  const search = useSearch({ strict: false }) as Partial<{
-    levelId: string;
-    subject: string;
-    chapterIdx: string;
-  }>;
+  const search = Route.useSearch();
 
   if (search.levelId && search.subject && search.chapterIdx) {
     return (
       <ChapterLessonPage
         levelId={search.levelId}
         subjectSlug={search.subject}
-        chapterIdx={search.chapterIdx}
+        chapterIdx={String(search.chapterIdx)}
       />
     );
   }
