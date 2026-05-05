@@ -225,8 +225,6 @@ function SubjectAccordion({
   level: LevelCurriculum;
   highlight: string;
 }) {
-  const navigate = useNavigate();
-
   return (
     <motion.div
       layout
@@ -279,18 +277,13 @@ function SubjectAccordion({
               {subject.chapters.map((ch, i) => {
                 return (
                   <li key={i}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate({
-                          to: "/curriculum/$levelId/$subject/$chapterIdx",
-                          params: {
-                            levelId: level.id,
-                            subject: getSubjectSlug(subject.subject),
-                            chapterIdx: String(i),
-                          },
-                        })
-                      }
+                    <Link
+                      to="/curriculum"
+                      search={{
+                        levelId: level.id,
+                        subject: getSubjectSlug(subject.subject),
+                        chapterIdx: String(i),
+                      }}
                       className="group flex w-full touch-manipulation items-start gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-primary/5"
                     >
                       <span
@@ -306,7 +299,7 @@ function SubjectAccordion({
                         dangerouslySetInnerHTML={{ __html: highlightText(ch, highlight) }}
                       />
                       <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                    </button>
+                    </Link>
                   </li>
                 );
               })}
