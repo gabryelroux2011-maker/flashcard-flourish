@@ -17,7 +17,6 @@ import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedEnglishTestRouteImport } from './routes/_authenticated.english-test'
 import { Route as AuthenticatedCurriculumRouteImport } from './routes/_authenticated.curriculum'
 import { Route as AuthenticatedDeckDeckIdRouteImport } from './routes/_authenticated.deck.$deckId'
-import { Route as AuthenticatedCurriculumLevelIdSubjectChapterIdxRouteImport } from './routes/_authenticated.curriculum.$levelId.$subject.$chapterIdx'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -59,44 +58,35 @@ const AuthenticatedDeckDeckIdRoute = AuthenticatedDeckDeckIdRouteImport.update({
   path: '/deck/$deckId',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute =
-  AuthenticatedCurriculumLevelIdSubjectChapterIdxRouteImport.update({
-    id: '/$levelId/$subject/$chapterIdx',
-    path: '/$levelId/$subject/$chapterIdx',
-    getParentRoute: () => AuthenticatedCurriculumRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
-  '/curriculum': typeof AuthenticatedCurriculumRouteWithChildren
+  '/curriculum': typeof AuthenticatedCurriculumRoute
   '/english-test': typeof AuthenticatedEnglishTestRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
   '/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
-  '/curriculum/$levelId/$subject/$chapterIdx': typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
-  '/curriculum': typeof AuthenticatedCurriculumRouteWithChildren
+  '/curriculum': typeof AuthenticatedCurriculumRoute
   '/english-test': typeof AuthenticatedEnglishTestRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
   '/': typeof AuthenticatedIndexRoute
   '/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
-  '/curriculum/$levelId/$subject/$chapterIdx': typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/curriculum': typeof AuthenticatedCurriculumRouteWithChildren
+  '/_authenticated/curriculum': typeof AuthenticatedCurriculumRoute
   '/_authenticated/english-test': typeof AuthenticatedEnglishTestRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
-  '/_authenticated/curriculum/$levelId/$subject/$chapterIdx': typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,7 +98,6 @@ export interface FileRouteTypes {
     | '/library'
     | '/new'
     | '/deck/$deckId'
-    | '/curriculum/$levelId/$subject/$chapterIdx'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -118,7 +107,6 @@ export interface FileRouteTypes {
     | '/new'
     | '/'
     | '/deck/$deckId'
-    | '/curriculum/$levelId/$subject/$chapterIdx'
   id:
     | '__root__'
     | '/_authenticated'
@@ -129,7 +117,6 @@ export interface FileRouteTypes {
     | '/_authenticated/new'
     | '/_authenticated/'
     | '/_authenticated/deck/$deckId'
-    | '/_authenticated/curriculum/$levelId/$subject/$chapterIdx'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,33 +182,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDeckDeckIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/curriculum/$levelId/$subject/$chapterIdx': {
-      id: '/_authenticated/curriculum/$levelId/$subject/$chapterIdx'
-      path: '/$levelId/$subject/$chapterIdx'
-      fullPath: '/curriculum/$levelId/$subject/$chapterIdx'
-      preLoaderRoute: typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRouteImport
-      parentRoute: typeof AuthenticatedCurriculumRoute
-    }
   }
 }
-
-interface AuthenticatedCurriculumRouteChildren {
-  AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute: typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
-}
-
-const AuthenticatedCurriculumRouteChildren: AuthenticatedCurriculumRouteChildren =
-  {
-    AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute:
-      AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute,
-  }
-
-const AuthenticatedCurriculumRouteWithChildren =
-  AuthenticatedCurriculumRoute._addFileChildren(
-    AuthenticatedCurriculumRouteChildren,
-  )
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedCurriculumRoute: typeof AuthenticatedCurriculumRouteWithChildren
+  AuthenticatedCurriculumRoute: typeof AuthenticatedCurriculumRoute
   AuthenticatedEnglishTestRoute: typeof AuthenticatedEnglishTestRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
@@ -230,7 +195,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedCurriculumRoute: AuthenticatedCurriculumRouteWithChildren,
+  AuthenticatedCurriculumRoute: AuthenticatedCurriculumRoute,
   AuthenticatedEnglishTestRoute: AuthenticatedEnglishTestRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,

@@ -18,7 +18,7 @@ import {
   type SubjectChapters,
 } from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
-import { ChapterLessonPage } from "./_authenticated.curriculum.$levelId.$subject.$chapterIdx";
+import { ChapterLessonPage } from "@/components/ChapterLessonPage";
 
 export const Route = createFileRoute("/_authenticated/curriculum")({
   head: () => ({
