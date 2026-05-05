@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,6 +18,7 @@ import {
   type SubjectChapters,
 } from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
+import { ChapterLessonPage } from "./_authenticated.curriculum.$levelId.$subject.$chapterIdx";
 
 export const Route = createFileRoute("/_authenticated/curriculum")({
   head: () => ({
@@ -34,8 +35,23 @@ export const Route = createFileRoute("/_authenticated/curriculum")({
 });
 
 function CurriculumRoute() {
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
-  return pathname === "/curriculum" ? <CurriculumPage /> : <Outlet />;
+  const search = useSearch({ strict: false }) as Partial<{
+    levelId: string;
+    subject: string;
+    chapterIdx: string;
+  }>;
+
+  if (search.levelId && search.subject && search.chapterIdx) {
+    return (
+      <ChapterLessonPage
+        levelId={search.levelId}
+        subjectSlug={search.subject}
+        chapterIdx={search.chapterIdx}
+      />
+    );
+  }
+
+  return <CurriculumPage />;
 }
 
 function CurriculumPage() {
@@ -209,8 +225,6 @@ function SubjectAccordion({
   level: LevelCurriculum;
   highlight: string;
 }) {
-  const navigate = useNavigate();
-
   return (
     <motion.div
       layout
@@ -263,18 +277,13 @@ function SubjectAccordion({
               {subject.chapters.map((ch, i) => {
                 return (
                   <li key={i}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate({
-                          to: "/curriculum/$levelId/$subject/$chapterIdx",
-                          params: {
-                            levelId: level.id,
-                            subject: getSubjectSlug(subject.subject),
-                            chapterIdx: String(i),
-                          },
-                        })
-                      }
+                    <Link
+                      to="/curriculum"
+                      search={{
+                        levelId: level.id,
+                        subject: getSubjectSlug(subject.subject),
+                        chapterIdx: String(i),
+                      }}
                       className="group flex w-full touch-manipulation items-start gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-primary/5"
                     >
                       <span
@@ -290,7 +299,7 @@ function SubjectAccordion({
                         dangerouslySetInnerHTML={{ __html: highlightText(ch, highlight) }}
                       />
                       <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                    </button>
+                    </Link>
                   </li>
                 );
               })}

@@ -62,6 +62,16 @@ type Tab = "lesson" | "quiz" | "exercises";
 
 function ChapterPage() {
   const { levelId, subject: subjectSlug, chapterIdx } = Route.useParams();
+  return <ChapterLessonPage levelId={levelId} subjectSlug={subjectSlug} chapterIdx={chapterIdx} />;
+}
+
+interface ChapterLessonPageProps {
+  levelId: string;
+  subjectSlug: string;
+  chapterIdx: string;
+}
+
+export function ChapterLessonPage({ levelId, subjectSlug, chapterIdx }: ChapterLessonPageProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   // Décodage robuste : gère les anciens liens éventuellement double-encodés
