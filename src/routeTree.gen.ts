@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedOralAnalysisRouteImport } from './routes/_authenticated.oral-analysis'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated.new'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated.library'
 import { Route as AuthenticatedEnglishTestRouteImport } from './routes/_authenticated.english-test'
@@ -33,6 +34,12 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedOralAnalysisRoute =
+  AuthenticatedOralAnalysisRouteImport.update({
+    id: '/oral-analysis',
+    path: '/oral-analysis',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/english-test': typeof AuthenticatedEnglishTestRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
+  '/oral-analysis': typeof AuthenticatedOralAnalysisRoute
   '/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
   '/curriculum/$levelId/$subject/$chapterIdx': typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
 }
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
   '/english-test': typeof AuthenticatedEnglishTestRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
+  '/oral-analysis': typeof AuthenticatedOralAnalysisRoute
   '/': typeof AuthenticatedIndexRoute
   '/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
   '/curriculum/$levelId/$subject/$chapterIdx': typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
@@ -94,6 +103,7 @@ export interface FileRoutesById {
   '/_authenticated/english-test': typeof AuthenticatedEnglishTestRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
+  '/_authenticated/oral-analysis': typeof AuthenticatedOralAnalysisRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/deck/$deckId': typeof AuthenticatedDeckDeckIdRoute
   '/_authenticated/curriculum/$levelId/$subject/$chapterIdx': typeof AuthenticatedCurriculumLevelIdSubjectChapterIdxRoute
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/english-test'
     | '/library'
     | '/new'
+    | '/oral-analysis'
     | '/deck/$deckId'
     | '/curriculum/$levelId/$subject/$chapterIdx'
   fileRoutesByTo: FileRoutesByTo
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/english-test'
     | '/library'
     | '/new'
+    | '/oral-analysis'
     | '/'
     | '/deck/$deckId'
     | '/curriculum/$levelId/$subject/$chapterIdx'
@@ -127,6 +139,7 @@ export interface FileRouteTypes {
     | '/_authenticated/english-test'
     | '/_authenticated/library'
     | '/_authenticated/new'
+    | '/_authenticated/oral-analysis'
     | '/_authenticated/'
     | '/_authenticated/deck/$deckId'
     | '/_authenticated/curriculum/$levelId/$subject/$chapterIdx'
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/oral-analysis': {
+      id: '/_authenticated/oral-analysis'
+      path: '/oral-analysis'
+      fullPath: '/oral-analysis'
+      preLoaderRoute: typeof AuthenticatedOralAnalysisRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/new': {
@@ -225,6 +245,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEnglishTestRoute: typeof AuthenticatedEnglishTestRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
+  AuthenticatedOralAnalysisRoute: typeof AuthenticatedOralAnalysisRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedDeckDeckIdRoute: typeof AuthenticatedDeckDeckIdRoute
 }
@@ -234,6 +255,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedEnglishTestRoute: AuthenticatedEnglishTestRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
+  AuthenticatedOralAnalysisRoute: AuthenticatedOralAnalysisRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedDeckDeckIdRoute: AuthenticatedDeckDeckIdRoute,
 }

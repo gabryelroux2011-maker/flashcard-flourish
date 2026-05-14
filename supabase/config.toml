@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.generate-chapter-lesson]
 verify_jwt = false
+
+[functions.analyze-oral-expression]
+verify_jwt = false

@@ -296,6 +296,66 @@ export type Database = {
           },
         ]
       }
+      oral_analyses: {
+        Row: {
+          created_at: string
+          duration_seconds: number
+          errors: Json
+          feedback: string | null
+          fillers: Json
+          fluency_score: number | null
+          grammar_score: number | null
+          id: string
+          language: string
+          overall_score: number
+          pronunciation_score: number | null
+          repetitions: Json
+          suggestions: Json
+          topic: string | null
+          transcript: string
+          user_id: string
+          vocabulary_score: number | null
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number
+          errors?: Json
+          feedback?: string | null
+          fillers?: Json
+          fluency_score?: number | null
+          grammar_score?: number | null
+          id?: string
+          language: string
+          overall_score?: number
+          pronunciation_score?: number | null
+          repetitions?: Json
+          suggestions?: Json
+          topic?: string | null
+          transcript?: string
+          user_id: string
+          vocabulary_score?: number | null
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number
+          errors?: Json
+          feedback?: string | null
+          fillers?: Json
+          fluency_score?: number | null
+          grammar_score?: number | null
+          id?: string
+          language?: string
+          overall_score?: number
+          pronunciation_score?: number | null
+          repetitions?: Json
+          suggestions?: Json
+          topic?: string | null
+          transcript?: string
+          user_id?: string
+          vocabulary_score?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           accent_color: string

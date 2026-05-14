@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Sparkles, LayoutDashboard, FolderTree, Plus, Languages, LogOut, Palette, Check, BookMarked } from "lucide-react";
+import { Sparkles, LayoutDashboard, FolderTree, Plus, Languages, LogOut, Palette, Check, BookMarked, Mic } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TimeWidget } from "@/components/TimeWidget";
@@ -19,6 +19,7 @@ const navItems = [
   { to: "/library", label: "Bibliothèque", icon: FolderTree },
   { to: "/new", label: "Nouvelle fiche", icon: Plus },
   { to: "/english-test", label: "Test d'anglais", icon: Languages },
+  { to: "/oral-analysis", label: "Coach oral", icon: Mic },
   { to: "/curriculum", label: "Référentiel", icon: BookMarked },
 ];
 
