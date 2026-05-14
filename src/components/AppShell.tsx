@@ -19,6 +19,7 @@ const navItems = [
   { to: "/library", label: "Bibliothèque", icon: FolderTree },
   { to: "/new", label: "Nouvelle fiche", icon: Plus },
   { to: "/english-test", label: "Test d'anglais", icon: Languages },
+  { to: "/oral-analysis", label: "Coach oral", icon: Mic },
   { to: "/curriculum", label: "Référentiel", icon: BookMarked },
 ];
 
