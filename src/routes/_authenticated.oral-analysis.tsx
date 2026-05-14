@@ -534,7 +534,7 @@ function OralAnalysisPage() {
                         </Badge>
                       </div>
                       <p className="truncate text-xs text-foreground/60">
-                        {p.topic ?? p.transcript.slice(0, 80) || "Sans sujet"}
+                        {p.topic ?? (p.transcript.slice(0, 80) || "Sans sujet")}
                       </p>
                       <p className="mt-1 text-[10px] text-foreground/50">
                         {new Date(p.created_at).toLocaleString("fr-FR")}
