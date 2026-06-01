@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type OralLanguage = "english" | "german";
+export type OralLanguage = "english" | "german" | "french" | "spanish";
 
 export interface OralError {
   type: string;
