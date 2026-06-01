@@ -115,7 +115,7 @@ serve(async (req) => {
       (await req.json()) as {
         audioBase64: string;
         mimeType: string;
-        language: "english" | "german";
+        language: "english" | "german" | "french" | "spanish";
         topic?: string | null;
         durationSeconds?: number;
       };
