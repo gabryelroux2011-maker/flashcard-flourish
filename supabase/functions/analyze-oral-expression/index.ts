@@ -154,7 +154,7 @@ Tu reçois un enregistrement audio. Tu dois :
 1. Transcrire fidèlement ce qui est dit (mot pour mot, dans la langue cible).
 2. Détecter TOUTES les erreurs : grammaire, conjugaison, accord, syntaxe, vocabulaire inadapté, faux-amis, prononciation manifestement fautive (si audible).
 3. Identifier les répétitions excessives (mots/expressions revenant trop souvent) et proposer des synonymes.
-4. Compter les mots de remplissage / hésitations ("uh", "um", "like", "you know" en anglais ; "äh", "also", "halt", "ja" en allemand).
+4. Compter les mots de remplissage / hésitations ("uh", "um", "like", "you know" en anglais ; "äh", "also", "halt", "ja" en allemand ; "euh", "ben", "genre", "du coup" en français ; "eh", "este", "o sea", "pues" en espagnol).
 5. Donner des scores sur 100 (fluidité, grammaire, vocabulaire, prononciation, global).
 6. Rédiger un bilan en français + 3 à 6 conseils concrets.
 
