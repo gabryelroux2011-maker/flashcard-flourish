@@ -129,7 +129,14 @@ serve(async (req) => {
       return json({ error: "LOVABLE_API_KEY non configurée" }, 500);
     }
 
-    const langLabel = language === "german" ? "allemand (Deutsch)" : "anglais (English)";
+    const langLabel =
+      language === "german"
+        ? "allemand (Deutsch)"
+        : language === "french"
+          ? "français"
+          : language === "spanish"
+            ? "espagnol (Español)"
+            : "anglais (English)";
 
     // Format audio pour OpenAI-compatible: déduit du mimeType
     const format = (() => {
