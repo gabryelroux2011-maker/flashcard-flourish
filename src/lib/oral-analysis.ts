@@ -53,6 +53,8 @@ export interface OralAnalysisRow {
 export const ORAL_LANGUAGES: { id: OralLanguage; label: string; flag: string; gradient: string }[] = [
   { id: "english", label: "Anglais", flag: "🇬🇧", gradient: "from-sky-400 to-indigo-500" },
   { id: "german", label: "Allemand", flag: "🇩🇪", gradient: "from-amber-400 to-rose-500" },
+  { id: "french", label: "Français", flag: "🇫🇷", gradient: "from-blue-500 to-rose-500" },
+  { id: "spanish", label: "Espagnol", flag: "🇪🇸", gradient: "from-yellow-400 to-red-500" },
 ];
 
 export function blobToBase64(blob: Blob): Promise<string> {
