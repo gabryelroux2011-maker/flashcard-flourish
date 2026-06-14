@@ -261,6 +261,87 @@ export type Database = {
         }
         Relationships: []
       }
+      grades: {
+        Row: {
+          assessment_type: string | null
+          coefficient: number
+          comment: string | null
+          created_at: string
+          graded_at: string
+          id: string
+          max_value: number
+          subject: string
+          term: string | null
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          assessment_type?: string | null
+          coefficient?: number
+          comment?: string | null
+          created_at?: string
+          graded_at?: string
+          id?: string
+          max_value?: number
+          subject: string
+          term?: string | null
+          updated_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          assessment_type?: string | null
+          coefficient?: number
+          comment?: string | null
+          created_at?: string
+          graded_at?: string
+          id?: string
+          max_value?: number
+          subject?: string
+          term?: string | null
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      homeworks: {
+        Row: {
+          created_at: string
+          description: string | null
+          done: boolean
+          due_date: string | null
+          id: string
+          subject: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          done?: boolean
+          due_date?: string | null
+          id?: string
+          subject: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          done?: boolean
+          due_date?: string | null
+          id?: string
+          subject?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mindmaps: {
         Row: {
           created_at: string
