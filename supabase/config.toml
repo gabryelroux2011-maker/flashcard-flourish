@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.analyze-oral-expression]
 verify_jwt = false
+
+[functions.extract-grades-image]
+verify_jwt = false
+
+[functions.grade-advice]
+verify_jwt = false
