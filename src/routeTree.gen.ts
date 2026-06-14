@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedOralAnalysisRouteImport } from './routes/_authenticated.oral-analysis'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated.new'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated.library'
+import { Route as AuthenticatedGradesRouteImport } from './routes/_authenticated.grades'
 import { Route as AuthenticatedEnglishTestRouteImport } from './routes/_authenticated.english-test'
 import { Route as AuthenticatedCurriculumRouteImport } from './routes/_authenticated.curriculum'
 import { Route as AuthenticatedDeckDeckIdRouteImport } from './routes/_authenticated.deck.$deckId'
@@ -50,6 +51,11 @@ const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedGradesRoute = AuthenticatedGradesRouteImport.update({
+  id: '/grades',
+  path: '/grades',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedEnglishTestRoute =
   AuthenticatedEnglishTestRouteImport.update({
     id: '/english-test',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/curriculum': typeof AuthenticatedCurriculumRouteWithChildren
   '/english-test': typeof AuthenticatedEnglishTestRoute
+  '/grades': typeof AuthenticatedGradesRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
   '/oral-analysis': typeof AuthenticatedOralAnalysisRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/curriculum': typeof AuthenticatedCurriculumRouteWithChildren
   '/english-test': typeof AuthenticatedEnglishTestRoute
+  '/grades': typeof AuthenticatedGradesRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/new': typeof AuthenticatedNewRoute
   '/oral-analysis': typeof AuthenticatedOralAnalysisRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/curriculum': typeof AuthenticatedCurriculumRouteWithChildren
   '/_authenticated/english-test': typeof AuthenticatedEnglishTestRoute
+  '/_authenticated/grades': typeof AuthenticatedGradesRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/_authenticated/oral-analysis': typeof AuthenticatedOralAnalysisRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/curriculum'
     | '/english-test'
+    | '/grades'
     | '/library'
     | '/new'
     | '/oral-analysis'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/curriculum'
     | '/english-test'
+    | '/grades'
     | '/library'
     | '/new'
     | '/oral-analysis'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/curriculum'
     | '/_authenticated/english-test'
+    | '/_authenticated/grades'
     | '/_authenticated/library'
     | '/_authenticated/new'
     | '/_authenticated/oral-analysis'
@@ -194,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibraryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/grades': {
+      id: '/_authenticated/grades'
+      path: '/grades'
+      fullPath: '/grades'
+      preLoaderRoute: typeof AuthenticatedGradesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/english-test': {
       id: '/_authenticated/english-test'
       path: '/english-test'
@@ -243,6 +262,7 @@ const AuthenticatedCurriculumRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedCurriculumRoute: typeof AuthenticatedCurriculumRouteWithChildren
   AuthenticatedEnglishTestRoute: typeof AuthenticatedEnglishTestRoute
+  AuthenticatedGradesRoute: typeof AuthenticatedGradesRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
   AuthenticatedOralAnalysisRoute: typeof AuthenticatedOralAnalysisRoute
@@ -253,6 +273,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCurriculumRoute: AuthenticatedCurriculumRouteWithChildren,
   AuthenticatedEnglishTestRoute: AuthenticatedEnglishTestRoute,
+  AuthenticatedGradesRoute: AuthenticatedGradesRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
   AuthenticatedOralAnalysisRoute: AuthenticatedOralAnalysisRoute,
@@ -271,12 +292,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
