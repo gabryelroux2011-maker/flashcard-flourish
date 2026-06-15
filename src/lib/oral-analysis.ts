@@ -29,6 +29,7 @@ export interface OralAnalysisResult {
   fillers: OralFiller[];
   suggestions: string[];
   feedback: string;
+  detected_language?: OralLanguage;
 }
 
 export interface OralAnalysisRow {
@@ -73,7 +74,7 @@ export function blobToBase64(blob: Blob): Promise<string> {
 
 export async function analyzeOralExpression(input: {
   audioBlob: Blob;
-  language: OralLanguage;
+  languages: OralLanguage[];
   topic?: string | null;
   durationSeconds: number;
 }): Promise<OralAnalysisResult> {
@@ -85,7 +86,8 @@ export async function analyzeOralExpression(input: {
     body: {
       audioBase64,
       mimeType: input.audioBlob.type,
-      language: input.language,
+      languages: input.languages,
+      language: input.languages[0],
       topic: input.topic ?? null,
       durationSeconds: Math.round(input.durationSeconds),
     },
