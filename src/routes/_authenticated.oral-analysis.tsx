@@ -66,10 +66,11 @@ function ScoreBar({ label, value }: { label: string; value: number | null | unde
 
 function OralAnalysisPage() {
   const [phase, setPhase] = useState<Phase>("idle");
-  const [language, setLanguage] = useState<OralLanguage>("english");
+  const [languages, setLanguages] = useState<OralLanguage[]>(["english"]);
   const [topic, setTopic] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [result, setResult] = useState<OralAnalysisResult | null>(null);
+  const [resultLang, setResultLang] = useState<OralLanguage>("english");
   const [duration, setDuration] = useState(0);
   const [past, setPast] = useState<OralAnalysisRow[]>([]);
   const [loadingPast, setLoadingPast] = useState(true);
@@ -149,14 +150,16 @@ function OralAnalysisPage() {
     try {
       const r = await analyzeOralExpression({
         audioBlob: blob,
-        language,
+        languages,
         topic: topic.trim() || null,
         durationSeconds,
       });
+      const detected = (r.detected_language ?? languages[0]) as OralLanguage;
       setResult(r);
+      setResultLang(detected);
       try {
         const saved = await saveOralAnalysis({
-          language,
+          language: detected,
           durationSeconds,
           result: r,
           topic: topic.trim() || null,
@@ -199,10 +202,10 @@ function OralAnalysisPage() {
         created_at: opened.created_at,
       }
     : result
-      ? { result, language, topic, duration, created_at: null }
+      ? { result, language: resultLang, topic, duration, created_at: null }
       : null;
 
-  const langMeta = ORAL_LANGUAGES.find((l) => l.id === (display?.language ?? language))!;
+  const langMeta = ORAL_LANGUAGES.find((l) => l.id === (display?.language ?? languages[0]))!;
 
   return (
     <AppShell>
@@ -217,8 +220,7 @@ function OralAnalysisPage() {
             Perfectionne ton <span className="text-gradient">oral</span>
           </h1>
           <p className="mt-2 max-w-2xl text-foreground/70">
-            Enregistre-toi en anglais ou en allemand. L'IA détecte chaque erreur, répétition et
-            hésitation, puis te dit exactement comment progresser.
+            Choisis une ou plusieurs langues, enregistre-toi : l'IA détecte automatiquement la langue parlée, repère chaque erreur, répétition et hésitation, et te dit comment progresser.
           </p>
         </div>
 
@@ -229,16 +231,24 @@ function OralAnalysisPage() {
               <div className="space-y-4">
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/60">
-                    Langue
+                    Langues (sélection multiple)
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {ORAL_LANGUAGES.map((l) => {
-                      const active = l.id === language;
+                      const active = languages.includes(l.id);
                       return (
                         <button
                           key={l.id}
                           disabled={phase !== "idle"}
-                          onClick={() => setLanguage(l.id)}
+                          onClick={() =>
+                            setLanguages((prev) => {
+                              if (prev.includes(l.id)) {
+                                const next = prev.filter((x) => x !== l.id);
+                                return next.length ? next : prev; // garde au moins une
+                              }
+                              return [...prev, l.id];
+                            })
+                          }
                           className={`relative overflow-hidden rounded-2xl border px-4 py-3 text-left transition-all disabled:opacity-50 ${
                             active
                               ? "border-transparent text-white shadow-glow"
@@ -247,7 +257,7 @@ function OralAnalysisPage() {
                         >
                           {active && (
                             <motion.div
-                              layoutId="oral-lang-active"
+                              layoutId={`oral-lang-${l.id}`}
                               className={`absolute inset-0 -z-10 bg-gradient-to-br ${l.gradient}`}
                               transition={{ type: "spring", stiffness: 380, damping: 30 }}
                             />
@@ -258,6 +268,11 @@ function OralAnalysisPage() {
                       );
                     })}
                   </div>
+                  <p className="mt-2 text-xs text-foreground/50">
+                    {languages.length > 1
+                      ? "L'IA détectera automatiquement laquelle tu parles."
+                      : "Astuce : coche plusieurs langues pour t'entraîner librement."}
+                  </p>
                 </div>
 
                 <div>

@@ -86,6 +86,11 @@ const analysisTool = {
           type: "string",
           description: "Bilan global de 3-5 phrases en français : forces, faiblesses, prochaine étape.",
         },
+        detected_language: {
+          type: "string",
+          enum: ["english", "german", "french", "spanish"],
+          description: "Langue effectivement parlée dans l'audio (parmi les langues autorisées).",
+        },
       },
       required: [
         "transcript",
@@ -99,6 +104,7 @@ const analysisTool = {
         "fillers",
         "suggestions",
         "feedback",
+        "detected_language",
       ],
       additionalProperties: false,
     },
@@ -111,17 +117,22 @@ serve(async (req) => {
   }
 
   try {
-    const { audioBase64, mimeType, language, topic, durationSeconds } =
+    const { audioBase64, mimeType, language, languages, topic, durationSeconds } =
       (await req.json()) as {
         audioBase64: string;
         mimeType: string;
-        language: "english" | "german" | "french" | "spanish";
+        language?: "english" | "german" | "french" | "spanish";
+        languages?: ("english" | "german" | "french" | "spanish")[];
         topic?: string | null;
         durationSeconds?: number;
       };
 
-    if (!audioBase64 || !language) {
-      return json({ error: "audioBase64 et language sont requis" }, 400);
+    const allowed = (languages && languages.length > 0 ? languages : language ? [language] : []) as (
+      "english" | "german" | "french" | "spanish"
+    )[];
+
+    if (!audioBase64 || allowed.length === 0) {
+      return json({ error: "audioBase64 et languages sont requis" }, 400);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -129,14 +140,16 @@ serve(async (req) => {
       return json({ error: "LOVABLE_API_KEY non configurée" }, 500);
     }
 
-    const langLabel =
-      language === "german"
+    const labelOf = (l: string) =>
+      l === "german"
         ? "allemand (Deutsch)"
-        : language === "french"
+        : l === "french"
           ? "français"
-          : language === "spanish"
+          : l === "spanish"
             ? "espagnol (Español)"
             : "anglais (English)";
+
+    const langLabel = allowed.map(labelOf).join(" ou ");
 
     // Format audio pour OpenAI-compatible: déduit du mimeType
     const format = (() => {
@@ -149,14 +162,16 @@ serve(async (req) => {
       return "webm";
     })();
 
-    const systemPrompt = `Tu es un coach linguistique expert en ${langLabel}, spécialisé dans l'évaluation orale d'élèves francophones.
-Tu reçois un enregistrement audio. Tu dois :
-1. Transcrire fidèlement ce qui est dit (mot pour mot, dans la langue cible).
-2. Détecter TOUTES les erreurs : grammaire, conjugaison, accord, syntaxe, vocabulaire inadapté, faux-amis, prononciation manifestement fautive (si audible).
-3. Identifier les répétitions excessives (mots/expressions revenant trop souvent) et proposer des synonymes.
-4. Compter les mots de remplissage / hésitations ("uh", "um", "like", "you know" en anglais ; "äh", "also", "halt", "ja" en allemand ; "euh", "ben", "genre", "du coup" en français ; "eh", "este", "o sea", "pues" en espagnol).
-5. Donner des scores sur 100 (fluidité, grammaire, vocabulaire, prononciation, global).
-6. Rédiger un bilan en français + 3 à 6 conseils concrets.
+    const systemPrompt = `Tu es un coach linguistique polyglotte expert en ${langLabel}, spécialisé dans l'évaluation orale d'élèves francophones.
+Tu reçois un enregistrement audio. L'élève peut s'exprimer dans l'UNE des langues suivantes : ${langLabel}.
+Tu dois :
+1. Détecter automatiquement la langue effectivement parlée (champ "detected_language") parmi celles autorisées.
+2. Transcrire fidèlement ce qui est dit (mot pour mot, dans la langue détectée).
+3. Détecter TOUTES les erreurs : grammaire, conjugaison, accord, syntaxe, vocabulaire inadapté, faux-amis, prononciation manifestement fautive (si audible).
+4. Identifier les répétitions excessives (mots/expressions revenant trop souvent) et proposer des synonymes.
+5. Compter les mots de remplissage / hésitations ("uh", "um", "like", "you know" en anglais ; "äh", "also", "halt", "ja" en allemand ; "euh", "ben", "genre", "du coup" en français ; "eh", "este", "o sea", "pues" en espagnol).
+6. Donner des scores sur 100 (fluidité, grammaire, vocabulaire, prononciation, global).
+7. Rédiger un bilan en français + 3 à 6 conseils concrets.
 
 Sois bienveillant mais exigeant : l'objectif est un oral parfait.${topic ? `\n\nSujet annoncé par l'élève : ${topic}` : ""}`;
 
