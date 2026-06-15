@@ -86,6 +86,11 @@ const analysisTool = {
           type: "string",
           description: "Bilan global de 3-5 phrases en français : forces, faiblesses, prochaine étape.",
         },
+        detected_language: {
+          type: "string",
+          enum: ["english", "german", "french", "spanish"],
+          description: "Langue effectivement parlée dans l'audio (parmi les langues autorisées).",
+        },
       },
       required: [
         "transcript",
@@ -99,6 +104,7 @@ const analysisTool = {
         "fillers",
         "suggestions",
         "feedback",
+        "detected_language",
       ],
       additionalProperties: false,
     },
@@ -111,17 +117,22 @@ serve(async (req) => {
   }
 
   try {
-    const { audioBase64, mimeType, language, topic, durationSeconds } =
+    const { audioBase64, mimeType, language, languages, topic, durationSeconds } =
       (await req.json()) as {
         audioBase64: string;
         mimeType: string;
-        language: "english" | "german" | "french" | "spanish";
+        language?: "english" | "german" | "french" | "spanish";
+        languages?: ("english" | "german" | "french" | "spanish")[];
         topic?: string | null;
         durationSeconds?: number;
       };
 
-    if (!audioBase64 || !language) {
-      return json({ error: "audioBase64 et language sont requis" }, 400);
+    const allowed = (languages && languages.length > 0 ? languages : language ? [language] : []) as (
+      "english" | "german" | "french" | "spanish"
+    )[];
+
+    if (!audioBase64 || allowed.length === 0) {
+      return json({ error: "audioBase64 et languages sont requis" }, 400);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -129,14 +140,16 @@ serve(async (req) => {
       return json({ error: "LOVABLE_API_KEY non configurée" }, 500);
     }
 
-    const langLabel =
-      language === "german"
+    const labelOf = (l: string) =>
+      l === "german"
         ? "allemand (Deutsch)"
-        : language === "french"
+        : l === "french"
           ? "français"
-          : language === "spanish"
+          : l === "spanish"
             ? "espagnol (Español)"
             : "anglais (English)";
+
+    const langLabel = allowed.map(labelOf).join(" ou ");
 
     // Format audio pour OpenAI-compatible: déduit du mimeType
     const format = (() => {
