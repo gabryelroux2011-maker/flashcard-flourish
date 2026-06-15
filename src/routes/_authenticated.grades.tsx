@@ -513,6 +513,57 @@ function GradesPage() {
 
 // ============ Sub-components ============
 
+function StatCard({
+  label, icon, big, unit, sub, tone, compact,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  big: string;
+  unit?: string;
+  sub?: string;
+  tone: "primary" | "emerald" | "rose";
+  compact?: boolean;
+}) {
+  const toneMap = {
+    primary: {
+      ring: "ring-primary/20",
+      chip: "bg-primary/15 text-primary",
+      bg: "bg-gradient-to-br from-primary/10 via-white/60 to-violet-400/10",
+      text: "text-gradient",
+    },
+    emerald: {
+      ring: "ring-emerald-300/40",
+      chip: "bg-emerald-100 text-emerald-700",
+      bg: "bg-gradient-to-br from-emerald-50 via-white/70 to-teal-50",
+      text: "text-emerald-700",
+    },
+    rose: {
+      ring: "ring-rose-300/40",
+      chip: "bg-rose-100 text-rose-700",
+      bg: "bg-gradient-to-br from-rose-50 via-white/70 to-amber-50",
+      text: "text-rose-700",
+    },
+  }[tone];
+  return (
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ type: "spring", stiffness: 300, damping: 22 }}
+      className={`relative overflow-hidden rounded-2xl border border-white/50 p-5 shadow-soft ring-1 ${toneMap.ring} ${toneMap.bg}`}
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-foreground/60">{label}</p>
+        <span className={`grid h-7 w-7 place-items-center rounded-full ${toneMap.chip}`}>{icon}</span>
+      </div>
+      <p className={`font-display font-bold ${toneMap.text} ${compact ? "text-2xl" : "text-4xl"} truncate`}>
+        {big}
+        {unit && <span className="ml-1 text-base font-semibold text-foreground/40">{unit}</span>}
+      </p>
+      {sub && <p className="mt-1 text-xs text-foreground/60">{sub}</p>}
+    </motion.div>
+  );
+}
+
+
 function AddGradeForm({ onAdd }: { onAdd: (d: any) => Promise<void> }) {
   const [subject, setSubject] = useState("");
   const [value, setValue] = useState("");
