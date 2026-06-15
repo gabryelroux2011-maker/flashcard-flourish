@@ -197,45 +197,61 @@ function GradesPage() {
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl space-y-8">
-        {/* HEADER */}
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-primary shadow-glow">
-                <GraduationCap className="h-5 w-5 text-white" />
+        {/* HEADER — hero card */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-3xl border border-white/40 bg-gradient-to-br from-primary/15 via-violet-400/10 to-fuchsia-400/15 p-6 shadow-soft md:p-8"
+        >
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gradient-primary opacity-20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-fuchsia-400/20 blur-3xl" />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="min-w-0 flex-1">
+              <div className="mb-3 flex items-center gap-3">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-primary shadow-glow">
+                  <GraduationCap className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/80">
+                    Suivi scolaire
+                  </p>
+                  <h1 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+                    Mes <span className="text-gradient">notes</span> & devoirs
+                  </h1>
+                </div>
               </div>
-              <h1 className="font-display text-3xl font-bold md:text-4xl">Mes notes & devoirs</h1>
+              <p className="max-w-xl text-sm text-foreground/70 md:text-base">
+                Importe une photo de bulletin, suis ta courbe de progression et reçois des conseils IA
+                personnalisés pour grimper trimestre après trimestre.
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Suis ton évolution, gère tes devoirs et reçois des conseils IA pour progresser.
-            </p>
+            <div className="flex flex-wrap gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFile(f);
+                }}
+              />
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={extracting}
+                className="gap-2 border-white/60 bg-white/60 backdrop-blur hover:bg-white/80"
+              >
+                {extracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+                Importer une photo
+              </Button>
+              <Button onClick={handleAdvice} disabled={adviceLoading} className="gap-2 bg-gradient-primary shadow-glow">
+                {adviceLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                Conseils IA
+              </Button>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) handleFile(f);
-              }}
-            />
-            <Button
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={extracting}
-              className="gap-2"
-            >
-              {extracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-              Importer une photo
-            </Button>
-            <Button onClick={handleAdvice} disabled={adviceLoading} className="gap-2 bg-gradient-primary">
-              {adviceLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              Conseils IA
-            </Button>
-          </div>
-        </div>
+        </motion.div>
 
         {/* PENDING EXTRACTED REVIEW */}
         <AnimatePresence>
@@ -323,45 +339,40 @@ function GradesPage() {
           )}
         </AnimatePresence>
 
-        {/* STATS + CHART */}
+        {/* STATS — richer cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="p-5 glass">
-            <p className="text-xs uppercase text-muted-foreground">Moyenne générale</p>
-            <p className="font-display text-4xl font-bold text-gradient">
-              {average !== null ? average.toFixed(2) : "—"}
-              <span className="text-lg text-muted-foreground">/20</span>
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">{grades.length} note(s) au total</p>
-          </Card>
-          <Card className="p-5 glass">
-            <p className="mb-2 text-xs uppercase text-muted-foreground">Top matière</p>
-            {bySubject[0] ? (
-              <>
-                <p className="font-display text-xl font-bold">{bySubject[0].subject}</p>
-                <p className="text-sm text-emerald-600">
-                  <Trophy className="mr-1 inline h-4 w-4" />
-                  {bySubject[0].average.toFixed(2)}/20
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">Pas encore de note</p>
-            )}
-          </Card>
-          <Card className="p-5 glass">
-            <p className="mb-2 text-xs uppercase text-muted-foreground">À améliorer</p>
-            {bySubject.length ? (
-              <>
-                <p className="font-display text-xl font-bold">{bySubject[bySubject.length - 1].subject}</p>
-                <p className="text-sm text-rose-600">
-                  <Target className="mr-1 inline h-4 w-4" />
-                  {bySubject[bySubject.length - 1].average.toFixed(2)}/20
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">—</p>
-            )}
-          </Card>
+          <StatCard
+            label="Moyenne générale"
+            icon={<TrendingUp className="h-4 w-4" />}
+            tone="primary"
+            big={average !== null ? average.toFixed(2) : "—"}
+            unit="/20"
+            sub={`${grades.length} note(s) au total`}
+          />
+          <StatCard
+            label="Top matière"
+            icon={<Trophy className="h-4 w-4" />}
+            tone="emerald"
+            big={bySubject[0]?.subject ?? "—"}
+            unit=""
+            sub={bySubject[0] ? `${bySubject[0].average.toFixed(2)}/20 de moyenne` : "Pas encore de note"}
+            compact
+          />
+          <StatCard
+            label="À améliorer"
+            icon={<Target className="h-4 w-4" />}
+            tone="rose"
+            big={bySubject.length ? bySubject[bySubject.length - 1].subject : "—"}
+            unit=""
+            sub={
+              bySubject.length
+                ? `${bySubject[bySubject.length - 1].average.toFixed(2)}/20 — focus prioritaire`
+                : "—"
+            }
+            compact
+          />
         </div>
+
 
         {/* CHART */}
         <Card className="p-5 glass">
